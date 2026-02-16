@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto-Research Agent - Analiză Crypto</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/01-design-tokens.css">
+  <link rel="stylesheet" href="css/02-reset.css">
+  <link rel="stylesheet" href="css/03-base.css">
+  <link rel="stylesheet" href="css/04-layout.css">
+  <link rel="stylesheet" href="css/05-components.css">
+  <link rel="stylesheet" href="css/06-sections.css">
+  <link rel="stylesheet" href="css/07-utilities.css">
+  
+  <style>
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: var(--space-8) 0;
+    }
+    
+    .hero__title {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+    
+    .hero__title span {
+      color: var(--color-accent-primary);
+    }
+    
+    .hero__subtitle {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin: 0 auto var(--space-6);
+    }
+    
+    /* Search Form */
+    .search-section {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: var(--space-6);
+      background-color: var(--color-bg-secondary);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-color);
+    }
+    
+    .search-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    
+    .search-form__input-group {
+      position: relative;
+    }
+    
+    .search-form__input {
+      width: 100%;
+      padding: var(--space-4) var(--space-5);
+      padding-left: calc(var(--space-5) + 30px);
+      font-size: var(--text-lg);
+      background-color: var(--color-bg-tertiary);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast) var(--ease-default);
+    }
+    
+    .search-form__input:focus {
+      border-color: var(--color-accent-primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+    
+    .search-form__input::placeholder {
+      color: var(--color-text-muted);
+    }
+    
+    .search-form__icon {
+      position: absolute;
+      left: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      font-size: var(--text-xl);
+    }
+    
+    .search-form__examples {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+    }
+    
+    .search-form__examples strong {
+      color: var(--color-text-secondary);
+    }
+    
+    .search-form__button {
+      padding: var(--space-4) var(--space-6);
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+    }
+    
+    /* Features Section */
+    .features {
+      padding: var(--space-8) 0;
+    }
+    
+    .features__title {
+      text-align: center;
+      font-size: var(--text-3xl);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-6);
+    }
+    
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-5);
+    }
+    
+    .feature-card {
+      background-color: var(--color-bg-secondary);
+      padding: var(--space-5);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      transition: all var(--duration-fast) var(--ease-default);
+    }
+    
+    .feature-card:hover {
+      border-color: var(--color-accent-primary);
+      transform: translateY(-4px);
+    }
+    
+    .feature-card__icon {
+      font-size: var(--text-3xl);
+      color: var(--color-accent-primary);
+      margin-bottom: var(--space-3);
+    }
+    
+    .feature-card__title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+    
+    .feature-card__description {
+      color: var(--color-text-secondary);
+      font-size: var(--text-base);
+    }
+    
+    /* Loading State */
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+    
+    .loading--active {
+      display: flex;
+    }
+    
+    .loading__spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--color-bg-tertiary);
+      border-top-color: var(--color-accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: var(--space-4);
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading__text {
+      font-size: var(--text-xl);
+      color: var(--color-text-secondary);
+    }
+    
+    .loading__subtext {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+    }
+    
+    /* Error Message */
+    .error-message {
+      display: none;
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius-md);
+      color: var(--color-accent-danger);
+    }
+    
+    .error-message--active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header__content">
+        <a href="index.html" class="header__logo">
+          <i class="fas fa-search-dollar header__logo-icon"></i>
+          <span>Crypto Research Agent</span>
+        </a>
+        <nav class="header__nav">
+          <a href="index.html" class="header__nav-link header__nav-link--active">Research</a>
+          <a href="history.html" class="header__nav-link">Istoric</a>
+          <a href="about.html" class="header__nav-link">Despre</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="container">
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1 class="hero__title">
+          Research <span>Crypto</span> Inteligent
+        </h1>
+        <p class="hero__subtitle">
+          Generează rapoarte complete cu analiză de risc în câteva secunde. 
+          Verifică token-uri înainte să investești.
+        </p>
+      </section>
+
+      <!-- Search Section -->
+      <section class="search-section">
+        <form class="search-form" id="searchForm">
+          <div class="search-form__input-group">
+            <i class="fas fa-search search-form__icon"></i>
+            <input 
+              type="text" 
+              class="search-form__input" 
+              id="tokenInput"
+              placeholder="Introdu ticker, adresă de contract sau nume..."
+              autocomplete="off"
+              required
+            >
+          </div>
+          <p class="search-form__examples">
+            <strong>Exemple:</strong> PEPE, BTC, 0x6982508145454Ce325dDbE47a25d4ec3d2311933, Ethereum
+          </p>
+          <button type="submit" class="btn btn--primary btn--lg search-form__button" id="submitBtn">
+            <i class="fas fa-rocket"></i>
+            Research Acum
+          </button>
+        </form>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+          <div class="loading__spinner"></div>
+          <p class="loading__text">Se analizează token-ul...</p>
+          <p class="loading__subtext">Acest proces poate dura 10-30 secunde</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+          <i class="fas fa-exclamation-circle"></i>
+          <span id="errorText">Token-ul nu a fost găsit.</span>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features">
+        <h2 class="features__title">Ce primești în raport</h2>
+        <div class="features__grid">
+          <div class="feature-card">
+            <i class="fas fa-chart-line feature-card__icon"></i>
+            <h3 class="feature-card__title">Analiză Preț Completă</h3>
+            <p class="feature-card__description">
+              ATH, ATL, volum, market cap, și trend-uri de preț cu grafice interactive.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <i class="fas fa-shield-alt feature-card__icon"></i>
+            <h3 class="feature-card__title">Risk Score 1-10</h3>
+            <p class="feature-card__description">
+              Evaluare automată a riscului bazată pe 13 factori cheie și red flags.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <i class="fas fa-exclamation-triangle feature-card__icon"></i>
+            <h3 class="feature-card__title">Detectare Red Flags</h3>
+            <p class="feature-card__description">
+              Verificare automată pentru honeypot, contracte neverificate, și alte pericole.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <i class="fas fa-users feature-card__icon"></i>
+            <h3 class="feature-card__title">Analiză Tokenomics</h3>
+            <p class="feature-card__description">
+              Supply, holders, distribuție whales, și metrici on-chain.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <i class="fas fa-heart feature-card__icon"></i>
+            <h3 class="feature-card__title">Sentiment Social</h3>
+            <p class="feature-card__description">
+              Analiză automată a sentimentului din social media și comunitate.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <i class="fas fa-bell feature-card__icon"></i>
+            <h3 class="feature-card__title">Monitorizare & Alerte</h3>
+            <p class="feature-card__description">
+              Primești alerte pe Discord la schimbări majore de preț sau volum.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__text">Crypto Research Agent - Built with 💰</p>
+      <p class="footer__disclaimer">
+        Acest tool este pentru scopuri educaționale. Risk score-ul este generat automat și 
+        nu constituie advice financiar. DYOR (Do Your Own Research).
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pages/index.js"></script>
+</body>
+</html>
