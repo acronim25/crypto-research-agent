@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Istoric - Crypto Research Agent</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/01-design-tokens.css">
+  <link rel="stylesheet" href="css/02-reset.css">
+  <link rel="stylesheet" href="css/03-base.css">
+  <link rel="stylesheet" href="css/04-layout.css">
+  <link rel="stylesheet" href="css/05-components.css">
+  <link rel="stylesheet" href="css/06-sections.css">
+  <link rel="stylesheet" href="css/07-utilities.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header__content">
+        <a href="index.html" class="header__logo">
+          <i class="fas fa-search-dollar header__logo-icon"></i>
+          <span>Crypto Research Agent</span>
+        </a>
+        <nav class="header__nav">
+          <a href="index.html" class="header__nav-link">Research</a>
+          <a href="history.html" class="header__nav-link header__nav-link--active">Istoric</a>
+          <a href="about.html" class="header__nav-link">Despre</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="container">
+      <!-- Page Title -->
+      <h1 class="text-3xl font-bold text-primary mb-6">Istoric Research-uri</h1>
+
+      <!-- Filters -->
+      <div class="history-filters">
+        <div class="history-filters__search">
+          <input 
+            type="text" 
+            id="searchInput"
+            class="form-input" 
+            placeholder="Caută după ticker sau nume..."
+          >
+        </div>
+        
+        <select id="riskFilter" class="form-input history-filters__select">
+          <option value="all">Toate Risk-urile</option>
+          <option value="low">Risc Scăzut (1-3)</option>
+          <option value="medium">Risc Moderat (4-5)</option>
+          <option value="high">Risc Ridicat (6-7)</option>
+          <option value="extreme">Risc Extrem (8-10)</option>
+        </select>
+        
+        <select id="sortFilter" class="form-input history-filters__select">
+          <option value="date-desc">Cele mai noi</option>
+          <option value="date-asc">Cele mai vechi</option>
+          <option value="risk-asc">Risk (mic → mare)</option>
+          <option value="risk-desc">Risk (mare → mic)</option>
+          <option value="name">Nume (A-Z)</option>
+        </select>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loading">
+        <div class="loading__spinner"></div>
+        <p class="loading__text">Se încarcă istoricul...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state hidden">
+        <i class="fas fa-history empty-state__icon"></i>
+        <h2 class="empty-state__title">Nu există research-uri</h2>
+        <p class="empty-state__description">
+          Începe prin a face un research pentru un token. 
+          Toate research-urile tale vor apărea aici.
+        </p>
+        <a href="index.html" class="btn btn--primary mt-4">
+          <i class="fas fa-search"></i> Research Acum
+        </a>
+      </div>
+
+      <!-- History List -->
+      <div id="historyList" class="history-list hidden">
+        <!-- History items will be inserted here -->
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="flex justify-center gap-2 mt-6 hidden">
+        <button id="prevPage" class="btn btn--secondary btn--sm">
+          <i class="fas fa-chevron-left"></i> Înapoi
+        </button>
+        <span id="pageInfo" class="text-secondary">Pagina 1 din 1</span>
+        
+        <button id="nextPage" class="btn btn--secondary btn--sm">
+          Înainte <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__text">Crypto Research Agent - Built with 💰</p>
+      <p class="footer__disclaimer">
+        Acest tool este pentru scopuri educaționale. Risk score-ul este generat automat și 
+        nu constituie advice financiar. DYOR (Do Your Own Research).
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pages/history.js"></script>
+</body>
+</html>

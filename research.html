@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raport Research - Crypto Research Agent</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/01-design-tokens.css">
+  <link rel="stylesheet" href="css/02-reset.css">
+  <link rel="stylesheet" href="css/03-base.css">
+  <link rel="stylesheet" href="css/04-layout.css">
+  <link rel="stylesheet" href="css/05-components.css">
+  <link rel="stylesheet" href="css/06-sections.css">
+  <link rel="stylesheet" href="css/07-utilities.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header__content">
+        <a href="index.html" class="header__logo">
+          <i class="fas fa-search-dollar header__logo-icon"></i>
+          <span>Crypto Research Agent</span>
+        </a>
+        <nav class="header__nav">
+          <a href="index.html" class="header__nav-link">Research</a>
+          <a href="history.html" class="header__nav-link">Istoric</a>
+          <a href="about.html" class="header__nav-link">Despre</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Loading State -->
+    <div id="loadingState" class="loading">
+      <div class="loading__spinner"></div>
+      <p class="loading__text">Se încarcă raportul...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="container hidden">
+      <div class="alert alert--error mt-6">
+        <i class="fas fa-exclamation-circle alert__icon"></i>
+        <div class="alert__content">
+          <h3 class="alert__title">Raportul nu a fost găsit</h3>
+          <p class="alert__message" id="errorMessage">ID-ul specificat nu există sau a expirat.</p>
+          <a href="index.html" class="btn btn--primary mt-4">
+            <i class="fas fa-arrow-left"></i> Înapoi la Research
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Research Report -->
+    <div id="researchReport" class="hidden">
+      <!-- Research Header -->
+      <section class="research-header">
+        <div class="container">
+          <div class="research-header__content">
+            <div class="research-header__info">
+              <img id="tokenLogo" src="" alt="Token Logo" class="research-header__logo" style="display: none;">
+              <div class="research-header__title-group">
+                <h1 id="tokenName" class="research-header__name">--</h1>
+                <span id="tokenTicker" class="research-header__ticker">--</span>
+                <span id="tokenAddress" class="research-header__meta">--</span>
+              </div>
+            </div>
+            <div id="riskBadgeContainer"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <!-- Overview Section -->
+        <section class="data-section">
+          <div class="data-section__header">
+            <h2 class="data-section__title">
+              <i class="fas fa-info-circle data-section__title-icon"></i>
+              Overview
+            </h2>
+          </div>
+          <div class="data-section__content">
+            <p id="tokenDescription">Se încarcă descrierea...</p>
+          </div>
+        </section>
+
+        <!-- Price Action & Tokenomics Grid -->
+        <div class="grid grid--2">
+          <!-- Price Action -->
+          <section class="data-section">
+            <div class="data-section__header">
+              <h2 class="data-section__title">
+                <i class="fas fa-chart-line data-section__title-icon"></i>
+                Price Action
+              </h2>
+            </div>
+            <div class="data-section__content">
+              <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+              </div>
+              <div id="priceStats" class="data-grid"></div>
+            </div>
+          </section>
+
+          <!-- Tokenomics -->
+          <section class="data-section">
+            <div class="data-section__header">
+              <h2 class="data-section__title">
+                <i class="fas fa-coins data-section__title-icon"></i>
+                Tokenomics
+              </h2>
+            </div>
+            <div class="data-section__content">
+              <div id="tokenomicsStats" class="data-grid"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- On-Chain Data -->
+        <section class="data-section">
+          <div class="data-section__header">
+            <h2 class="data-section__title">
+              <i class="fas fa-link data-section__title-icon"></i>
+              Date On-Chain
+            </h2>
+            <span class="data-section__badge">DEX</span>
+          </div>
+          <div class="data-section__content">
+            <div id="onChainStats" class="data-grid"></div>
+          </div>
+        </section>
+
+        <!-- Red Flags -->
+        <section class="data-section">
+          <div class="data-section__header">
+            <h2 class="data-section__title">
+              <i class="fas fa-shield-alt data-section__title-icon"></i>
+              Verificare Red Flags
+            </h2>
+          </div>
+          <div class="data-section__content">
+            <div id="redFlagsList">
+              <!-- Red flags will be inserted here -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Team & Use Case -->
+        <section class="data-section">
+          <div class="data-section__header">
+            <h2 class="data-section__title">
+              <i class="fas fa-users data-section__title-icon"></i>
+              Echipă & Use Case
+            </h2>
+          </div>
+          <div class="data-section__content">
+            <h4>Echipă</h4>
+            <p id="teamInfo">Se încarcă...</p>
+            <h4 class="mt-4">Use Case</h4>
+            <p id="useCaseInfo">Se încarcă...</p>
+          </div>
+        </section>
+
+        <!-- Social Sentiment -->
+        <section class="data-section">
+          <div class="data-section__header">
+            <h2 class="data-section__title">
+              <i class="fas fa-heart data-section__title-icon"></i>
+              Sentiment Social
+            </h2>
+          </div>
+          <div class="data-section__content">
+            <div class="grid grid--3">
+              <div class="stat-item">
+                <div id="sentimentScore" class="stat-item__value">--</div>
+                <div class="stat-item__label">Sentiment Score</div>
+              </div>
+              <div class="stat-item">
+                <div id="sentimentLabel" class="stat-item__value">--</div>
+                <div class="stat-item__label">Sentiment</div>
+              </div>
+              <div class="stat-item">
+                <div id="socialScore" class="stat-item__value">--</div>
+                <div class="stat-item__label">Social Score</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="data-section">
+          <div class="data-section__header">
+            <h2 class="data-section__title">
+              <i class="fas fa-clipboard-check data-section__title-icon"></i>
+              Concluzie
+            </h2>
+          </div>
+          <div class="data-section__content">
+            <div class="text-center mb-5">
+              <div id="conclusionRiskBadge"></div>
+            </div>
+            
+            <p id="conclusionText">Se încarcă concluzia...</p>
+            
+            <div class="alert alert--info mt-4">
+              <i class="fas fa-info-circle alert__icon"></i>
+              <div class="alert__content">
+                <strong>Disclaimer:</strong> Acest raport este generat automat pe baza datelor publice 
+                și nu constituie advice financiar. Risk score-ul este o estimare și nu garantează 
+                viitoare performanțe. DYOR (Do Your Own Research) înainte de orice investiție.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button id="shareBtn" class="btn btn--secondary">
+            <i class="fab fa-discord"></i> Share pe Discord
+          </button>
+          
+          <button id="bookmarkBtn" class="btn btn--secondary">
+            <i class="fas fa-bookmark"></i> Bookmark
+          </button>
+          
+          <button id="watchlistBtn" class="btn btn--secondary">
+            <i class="fas fa-eye"></i> Add to Watchlist
+          </button>
+          
+          <button id="monitorBtn" class="btn btn--primary">
+            <i class="fas fa-bell"></i> Monitorizează
+          </button>
+          
+          <a href="index.html" class="btn btn--secondary">
+            <i class="fas fa-search"></i> Research Altul
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__text">Crypto Research Agent - Built with 💰</p>
+      <p class="footer__disclaimer">
+        Acest tool este pentru scopuri educaționale. Risk score-ul este generat automat și 
+        nu constituie advice financiar. DYOR (Do Your Own Research).
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/components/RiskBadge.js"></script>
+  <script src="js/components/PriceChart.js"></script>
+  <script src="js/components/DataGrid.js"></script>
+  <script src="js/components/RedFlagItem.js"></script>
+  <script src="js/pages/research.js"></script>
+</body>
+</html>
