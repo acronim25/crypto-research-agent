@@ -1,0 +1,16 @@
+{
+  "name": "crypto-research-agent",
+  "version": "1.0.0",
+  "description": "Auto-Research Agent pentru Crypto - Generează rapoarte complete pentru token-uri",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["crypto", "research", "token", "analysis", "risk-score"],
+  "author": "Alex",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "latest"
+  }
+}
