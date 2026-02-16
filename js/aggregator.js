@@ -585,24 +585,29 @@ const Aggregator = {
       etherscan: etherscanHolders.length
     });
     
-    // Prioritize: Moralis > Etherscan > Ethplorer > DexScreener
+    // Prioritize: Ethplorer > Moralis > Etherscan > DexScreener
     let bestHolders = [];
     let holdersSource = null;
     let holdersCount = 0;
     
-    if (moralisHolders.length > 0) {
-      bestHolders = moralisHolders;
-      holdersSource = 'Moralis';
-      holdersCount = moralis.value.holdersCount;
-    } else if (etherscanHolders.length > 0) {
-      bestHolders = etherscanHolders;
-      holdersSource = 'Etherscan';
-      holdersCount = etherscan.value.holdersCount;
-    } else if (ethplorerHolders.length > 0) {
-      bestHolders = ethplorerHolders;
-      holdersSource = 'Ethplorer';
+    // First check Ethplorer for holders count (most reliable for free tier)
+    if (ethplorer.status === 'fulfilled' && ethplorer.value.found) {
       holdersCount = ethplorer.value.holdersCount;
-    } else if (dexHolders.length > 0) {
+      holdersSource = 'Ethplorer';
+      bestHolders = ethplorer.value.topHolders || [];
+      console.log('✅ Using Ethplorer data:', holdersCount, 'holders');
+    }
+    
+    // If Ethplorer doesn't have count, try Moralis for holders
+    if (holdersCount === 0 && moralis.status === 'fulfilled' && moralis.value.found) {
+      holdersCount = moralis.value.holdersCount;
+      holdersSource = 'Moralis';
+      bestHolders = moralis.value.holders || [];
+      console.log('✅ Using Moralis data:', holdersCount, 'holders');
+    }
+    
+    // Fallback to DexScreener
+    if (holdersCount === 0 && dexHolders.length > 0) {
       bestHolders = dexHolders;
       holdersSource = 'DexScreener';
       holdersCount = dexScreener.value.topHoldersCount;
