@@ -637,12 +637,13 @@
 
   <!-- Scripts -->
   <script src="js/config.js"></script>
+  <script src="js/aggregator.js"></script>
   <script src="js/api.js"></script>
   <script>
     console.log('✅ Scripts loaded:', {
       config: typeof CONFIG !== 'undefined',
-      api: typeof API !== 'undefined',
-      coinGecko: typeof CoinGeckoAPI !== 'undefined'
+      aggregator: typeof Aggregator !== 'undefined',
+      api: typeof API !== 'undefined'
     });
   </script>
   <script src="js/pages/index.js"></script>

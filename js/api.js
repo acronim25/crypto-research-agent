@@ -243,15 +243,26 @@ const RealAPI = {
       const coin = searchResults.coins[0];
       console.log('🎯 Selected coin:', coin.id);
       
-      // Ia date complete
+      // Ia date complete de la CoinGecko
       const coinData = await CoinGeckoAPI.getCoinData(coin.id);
       console.log('📈 Coin data received:', coinData.name);
       
       // Generează ID unic pentru research
       const researchId = `research_${coin.id}_${Date.now()}`;
       
-      // Salvează în localStorage pentru a simula "baza de date"
-      const research = this.buildResearchObject(researchId, coinData);
+      // Agreghează date de la multiple surse
+      console.log('🔄 Aggregating data from multiple sources...');
+      const contractAddress = coinData.contract_address || coin.platforms?.ethereum;
+      const aggregatedData = await Aggregator.aggregateCoinData(
+        coinData, 
+        coin.id, 
+        coinData.name,
+        contractAddress
+      );
+      console.log('✅ Aggregation complete:', Aggregator.getSourcesSummary(aggregatedData));
+      
+      // Construiește obiectul research cu date agregate
+      const research = this.buildResearchObject(researchId, coinData, aggregatedData);
       console.log('💾 Saving research:', researchId);
       
       localStorage.setItem(researchId, JSON.stringify(research));
@@ -279,7 +290,7 @@ const RealAPI = {
     }
   },
   
-  buildResearchObject(id, coinData) {
+  buildResearchObject(id, coinData, aggregatedData = null) {
     const marketData = coinData.market_data || {};
     const riskAnalysis = Analyzer.calculateRiskScore(coinData);
     const sentimentAnalysis = Analyzer.calculateSentiment(coinData);
@@ -288,7 +299,8 @@ const RealAPI = {
     const currentPrice = marketData.current_price?.usd || 0;
     const athPercentage = ath > 0 ? ((currentPrice - ath) / ath) * 100 : 0;
     
-    return {
+    // Build base object
+    const research = {
       id: id,
       token: {
         ticker: (coinData.symbol || '').toUpperCase(),
@@ -343,8 +355,58 @@ const RealAPI = {
         social_score: coinData.community_score || 0
       },
       created_at: new Date().toISOString(),
-      raw_data: coinData // Salvăm datele brute pentru debugging
+      raw_data: coinData, // Salvăm datele brute pentru debugging
+      aggregated_sources: null
     };
+    
+    // Add aggregated data if available
+    if (aggregatedData) {
+      const combined = aggregatedData.combined;
+      
+      // Update onchain data with aggregated info
+      if (combined.liquidity) {
+        research.onchain.liquidity_pool_usd = combined.liquidity.dexLiquidity;
+        research.onchain.total_value_locked = combined.liquidity.totalValueLocked;
+      }
+      
+      if (combined.taxes) {
+        research.onchain.buy_tax_percentage = combined.taxes.buyTax;
+        research.onchain.sell_tax_percentage = combined.taxes.sellTax;
+      }
+      
+      if (combined.holders) {
+        research.tokenomics.holders_count = combined.holders.count || research.tokenomics.holders_count;
+        research.tokenomics.top_holders = combined.holders.topHolders;
+        
+        // Calculate top 10 holders percentage if available
+        if (combined.holders.topHolders?.length > 0) {
+          const top10Percentage = combined.holders.topHolders
+            .slice(0, 10)
+            .reduce((sum, h) => sum + (parseFloat(h.percentage) || 0), 0);
+          research.tokenomics.top_10_holders_percentage = top10Percentage;
+        }
+      }
+      
+      // Add DeFi data
+      if (combined.defi) {
+        research.defi = {
+          category: combined.defi.category,
+          chains: combined.defi.chains,
+          audits: combined.defi.audits,
+          governance: combined.defi.governance
+        };
+      }
+      
+      // Add price comparison
+      if (combined.priceComparison) {
+        research.price_comparison = combined.priceComparison;
+      }
+      
+      // Add source summary
+      research.aggregated_sources = Aggregator.getSourcesSummary(aggregatedData);
+    }
+    
+    return research;
   },
   
   addToHistory(research) {
@@ -427,6 +489,7 @@ const RealAPI = {
 
 // Expune API global
 window.API = RealAPI;
+window.Aggregator = Aggregator;
 
 // Log pentru debugging
-console.log('🔌 Real API initialized with CoinGecko');
+console.log('🔌 Real API initialized with CoinGecko + Multi-Source Aggregator');
