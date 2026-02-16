@@ -219,9 +219,9 @@ const Aggregator = {
   },
 
   // ============================================
-  // ETHERSCAN API - Contract Verification & Holders
+  // ETHERSCAN API - Top Token Holders
   // ============================================
-  async fetchEtherscanData(contractAddress, apiKey = null) {
+  async fetchEtherscanData(contractAddress, apiKey = 'YourApiKeyToken') {
     if (!contractAddress || !contractAddress.startsWith('0x')) {
       return { found: false };
     }
@@ -231,28 +231,69 @@ const Aggregator = {
     if (cached) return cached;
     
     try {
-      // Note: Without API key, we're limited. This is a placeholder structure.
-      // In production, you'd use: https://api.etherscan.io/api?module=contract&action=getabi&address=...
+      console.log('🔍 Etherscan: Fetching top holders for:', contractAddress);
       
-      // For now, return basic structure
+      // Etherscan API - Get Token Holder List
+      const response = await fetch(
+        `https://api.therscan.io/api?module=token&action=tokenholderlist&contractaddress=${contractAddress}&page=1&offset=10&apikey=${apiKey}`
+      );
+      
+      if (!response.ok) {
+        console.warn('⚠️ Etherscan: HTTP error:', response.status);
+        return { found: false, status: response.status };
+      }
+      
+      const data = await response.json();
+      
+      if (data.status !== '1' || !data.result) {
+        console.warn('⚠️ Etherscan: API error:', data.message || 'Unknown error');
+        return { found: false, error: data.message };
+      }
+      
+      // Parse holders
+      const holders = data.result.map(h => ({
+        address: h.TokenHolderAddress,
+        balance: h.TokenHolderQuantity,
+        percentage: null // Will calculate below
+      }));
+      
+      // Get token supply to calculate percentages
+      const supplyResponse = await fetch(
+        `https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=${contractAddress}&apikey=${apiKey}`
+      );
+      
+      let totalSupply = 0;
+      if (supplyResponse.ok) {
+        const supplyData = await supplyResponse.json();
+        if (supplyData.status === '1') {
+          totalSupply = parseFloat(supplyData.result);
+        }
+      }
+      
+      // Calculate percentages if we have supply
+      if (totalSupply > 0) {
+        holders.forEach(h => {
+          const balance = parseFloat(h.balance);
+          h.percentage = ((balance / totalSupply) * 100).toFixed(4);
+        });
+      }
+      
+      console.log('✅ Etherscan: Found', holders.length, 'holders');
+      
       const result = {
         found: true,
         contractAddress,
-        verified: null, // Would need API key to check
-        implementation: null,
-        creator: null,
-        creationDate: null,
-        holders: null,
-        transactions: null,
-        sourceCode: null,
-        abi: null
+        holders,
+        holdersCount: holders.length,
+        totalSupply,
+        source: 'Etherscan'
       };
       
       this.setCached(cacheKey, result);
       return result;
       
     } catch (error) {
-      console.warn('Etherscan API error:', error);
+      console.warn('❌ Etherscan API error:', error);
       return { found: false, error: error.message };
     }
   },
@@ -378,12 +419,13 @@ const Aggregator = {
     const symbol = coinGeckoData.symbol?.toUpperCase();
     
     // Fetch all sources in parallel
-    const [defiLlama, dexScreener, messari, cmc, ethplorer] = await Promise.allSettled([
+    const [defiLlama, dexScreener, messari, cmc, ethplorer, etherscan] = await Promise.allSettled([
       this.fetchDefiLlamaData(coinId, coinName),
       contractAddress ? this.fetchDexScreenerData(contractAddress) : Promise.resolve({ found: false }),
       this.fetchMessariData(symbol),
       this.fetchCoinMarketCapData(symbol),
-      contractAddress ? this.fetchEthplorerData(contractAddress) : Promise.resolve({ found: false })
+      contractAddress ? this.fetchEthplorerData(contractAddress) : Promise.resolve({ found: false }),
+      contractAddress ? this.fetchEtherscanData(contractAddress) : Promise.resolve({ found: false })
     ]);
     
     const aggregated = {
@@ -393,7 +435,8 @@ const Aggregator = {
         dexScreener: dexScreener.status === 'fulfilled' ? dexScreener.value : { error: dexScreener.reason },
         messari: messari.status === 'fulfilled' ? messari.value : { error: messari.reason },
         coinMarketCap: cmc.status === 'fulfilled' ? cmc.value : { error: cmc.reason },
-        ethplorer: ethplorer.status === 'fulfilled' ? ethplorer.value : { error: ethplorer.reason }
+        ethplorer: ethplorer.status === 'fulfilled' ? ethplorer.value : { error: ethplorer.reason },
+        etherscan: etherscan.status === 'fulfilled' ? etherscan.value : { error: etherscan.reason }
       },
       combined: {}
     };
@@ -426,14 +469,47 @@ const Aggregator = {
       ? ethplorer.value.topHolders
       : [];
     
-    console.log('💡 Aggregator - Ethplorer holders:', ethplorerHolders.length, 'DexScreener holders:', dexHolders.length);
+    const etherscanHolders = etherscan.status === 'fulfilled' && etherscan.value.found
+      ? etherscan.value.holders
+      : [];
     
-    // Prioritize Ethplorer for Ethereum tokens as it has better holder data
-    const bestHolders = ethplorerHolders.length > 0 ? ethplorerHolders : dexHolders;
-    const holdersSource = ethplorerHolders.length > 0 ? 'Ethplorer' : dexHolders.length > 0 ? 'DexScreener' : null;
-    const holdersCount = ethplorer.status === 'fulfilled' && ethplorer.value.found
-      ? ethplorer.value.holdersCount
-      : dexScreener.status === 'fulfilled' && dexScreener.value.found
+    console.log('💡 Aggregator - Holders sources:', {
+      ethplorer: ethplorerHolders.length,
+      dexScreener: dexHolders.length,
+      etherscan: etherscanHolders.length
+    });
+    
+    // Prioritize: Etherscan > Ethplorer > DexScreener
+    let bestHolders = [];
+    let holdersSource = null;
+    let holdersCount = 0;
+    
+    if (etherscanHolders.length > 0) {
+      bestHolders = etherscanHolders;
+      holdersSource = 'Etherscan';
+      holdersCount = etherscan.value.holdersCount;
+    } else if (ethplorerHolders.length > 0) {
+      bestHolders = ethplorerHolders;
+      holdersSource = 'Ethplorer';
+      holdersCount = ethplorer.value.holdersCount;
+    } else if (dexHolders.length > 0) {
+      bestHolders = dexHolders;
+      holdersSource = 'DexScreener';
+      holdersCount = dexScreener.value.topHoldersCount;
+    }
+    
+    // Fallback to Ethplorer holders count if available
+    if (holdersCount === 0 && ethplorer.status === 'fulfilled' && ethplorer.value.found) {
+      holdersCount = ethplorer.value.holdersCount;
+    }
+    
+    console.log('💡 Aggregator - Selected:', bestHolders.length, 'holders from', holdersSource, 'Total count:', holdersCount);
+    
+    aggregated.combined.holders = {
+      topHolders: bestHolders,
+      count: holdersCount,
+      source: holdersSource
+    };
         ? dexScreener.value.topHoldersCount
         : 0;
     
