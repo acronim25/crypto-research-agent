@@ -21,7 +21,24 @@
   <link rel="stylesheet" href="css/04-layout.css">
   <link rel="stylesheet" href="css/05-components.css">
   <link rel="stylesheet" href="css/06-sections.css">
-  <link rel="stylesheet" href="css/07-utilities.css">
+  <link rel="stylesheet" href="css/07-utilities.css"
+  
+  <!-- SPA Routing Fix for GitHub Pages -->
+  <script type="text/javascript">
+    // Single Page Apps for GitHub Pages
+    // MIT License
+    // https://github.com/rafgraph/spa-github-pages
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
+  </script>
 </head>
 <body>
   <!-- Header -->
@@ -264,8 +281,8 @@
 
   <!-- Scripts -->
   <script src="js/config.js"></script>
-  <script src="js/api-mock.js"></script>
-  <!-- <script src="js/api.js"></script> -->
+  <script src="js/api.js"></script>
+  <!-- <script src="js/api-mock.js"></script> -->
   <script src="js/components/RiskBadge.js"></script>
   <script src="js/components/PriceChart.js"></script>
   <script src="js/components/DataGrid.js"></script>
