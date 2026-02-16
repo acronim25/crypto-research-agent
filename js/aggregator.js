@@ -221,7 +221,7 @@ const Aggregator = {
   // ============================================
   // MORALIS API - Top Token Holders (Free tier available)
   // ============================================
-  async fetchMoralisData(contractAddress, apiKey = null) {
+  async fetchMoralisData(contractAddress, apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImQ0M2VlNjE5LWNkNmUtNDVmZi04NTY2LTliYjk0YjhjYzJhYSIsIm9yZ0lkIjoiNTAwOTU1IiwidXNlcklkIjoiNTE1NDU5IiwidHlwZUlkIjoiZWNjMzU1NWItOWMxNS00OTgxLWI0MzYtOWNhZTc1MjNkZTkzIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NzEyODIzMzAsImV4cCI6NDkyNzA0MjMzMH0.iEIiyjdJ-sXe4XmO6qX1K-_1FbXl154ky1OcAdQk3Io') {
     if (!contractAddress || !contractAddress.startsWith('0x')) {
       return { found: false };
     }
