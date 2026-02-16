@@ -219,6 +219,81 @@ const Aggregator = {
   },
 
   // ============================================
+  // MORALIS API - Top Token Holders (Free tier available)
+  // ============================================
+  async fetchMoralisData(contractAddress, apiKey = null) {
+    if (!contractAddress || !contractAddress.startsWith('0x')) {
+      return { found: false };
+    }
+    
+    const cacheKey = `moralis_${contractAddress}`;
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
+    
+    try {
+      console.log('🔍 Moralis: Fetching top holders for:', contractAddress);
+      
+      // Note: Moralis requires API key. This is a placeholder structure.
+      // To use: Sign up at https://admin.moralis.io/ and get free API key
+      // Free tier: 25,000 requests/month
+      
+      if (!apiKey) {
+        console.log('⚠️ Moralis: No API key provided, skipping');
+        return { found: false, error: 'No API key' };
+      }
+      
+      const response = await fetch(
+        `https://deep-index.moralis.io/api/v2.2/erc20/${contractAddress}/owners?chain=eth&limit=10`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'X-API-Key': apiKey
+          }
+        }
+      );
+      
+      if (!response.ok) {
+        console.warn('⚠️ Moralis: HTTP error:', response.status);
+        return { found: false, status: response.status };
+      }
+      
+      const data = await response.json();
+      
+      if (!data.result || data.result.length === 0) {
+        console.warn('⚠️ Moralis: No holders found');
+        return { found: false };
+      }
+      
+      console.log('✅ Moralis: Found', data.result.length, 'holders');
+      
+      // Calculate percentages
+      const totalSupply = data.result.reduce((sum, h) => sum + parseFloat(h.balance), 0);
+      
+      const holders = data.result.map(h => ({
+        address: h.owner_address,
+        balance: h.balance,
+        percentage: totalSupply > 0 ? ((parseFloat(h.balance) / totalSupply) * 100).toFixed(4) : '0'
+      }));
+      
+      const result = {
+        found: true,
+        contractAddress,
+        holders,
+        holdersCount: holders.length,
+        totalSupply,
+        source: 'Moralis'
+      };
+      
+      this.setCached(cacheKey, result);
+      return result;
+      
+    } catch (error) {
+      console.warn('❌ Moralis API error:', error);
+      return { found: false, error: error.message };
+    }
+  },
+
+  // ============================================
   // ETHERSCAN API - Top Token Holders
   // ============================================
   async fetchEtherscanData(contractAddress, apiKey = 'C4H5JJ8Q535A9ACPGYPIPJS36Z2QFZIBW3') {
@@ -423,13 +498,14 @@ const Aggregator = {
     const symbol = coinGeckoData.symbol?.toUpperCase();
     
     // Fetch all sources in parallel
-    const [defiLlama, dexScreener, messari, cmc, ethplorer, etherscan] = await Promise.allSettled([
+    const [defiLlama, dexScreener, messari, cmc, ethplorer, etherscan, moralis] = await Promise.allSettled([
       this.fetchDefiLlamaData(coinId, coinName),
       contractAddress ? this.fetchDexScreenerData(contractAddress) : Promise.resolve({ found: false }),
       this.fetchMessariData(symbol),
       this.fetchCoinMarketCapData(symbol),
       contractAddress ? this.fetchEthplorerData(contractAddress) : Promise.resolve({ found: false }),
-      contractAddress ? this.fetchEtherscanData(contractAddress) : Promise.resolve({ found: false })
+      contractAddress ? this.fetchEtherscanData(contractAddress) : Promise.resolve({ found: false }),
+      contractAddress ? this.fetchMoralisData(contractAddress) : Promise.resolve({ found: false })
     ]);
     
     const aggregated = {
@@ -440,7 +516,8 @@ const Aggregator = {
         messari: messari.status === 'fulfilled' ? messari.value : { error: messari.reason },
         coinMarketCap: cmc.status === 'fulfilled' ? cmc.value : { error: cmc.reason },
         ethplorer: ethplorer.status === 'fulfilled' ? ethplorer.value : { error: ethplorer.reason },
-        etherscan: etherscan.status === 'fulfilled' ? etherscan.value : { error: etherscan.reason }
+        etherscan: etherscan.status === 'fulfilled' ? etherscan.value : { error: etherscan.reason },
+        moralis: moralis.status === 'fulfilled' ? moralis.value : { error: moralis.reason }
       },
       combined: {}
     };
@@ -477,18 +554,27 @@ const Aggregator = {
       ? etherscan.value.holders
       : [];
     
+    const moralisHolders = moralis.status === 'fulfilled' && moralis.value.found
+      ? moralis.value.holders
+      : [];
+    
     console.log('💡 Aggregator - Holders sources:', {
+      moralis: moralisHolders.length,
       ethplorer: ethplorerHolders.length,
       dexScreener: dexHolders.length,
       etherscan: etherscanHolders.length
     });
     
-    // Prioritize: Etherscan > Ethplorer > DexScreener
+    // Prioritize: Moralis > Etherscan > Ethplorer > DexScreener
     let bestHolders = [];
     let holdersSource = null;
     let holdersCount = 0;
     
-    if (etherscanHolders.length > 0) {
+    if (moralisHolders.length > 0) {
+      bestHolders = moralisHolders;
+      holdersSource = 'Moralis';
+      holdersCount = moralis.value.holdersCount;
+    } else if (etherscanHolders.length > 0) {
       bestHolders = etherscanHolders;
       holdersSource = 'Etherscan';
       holdersCount = etherscan.value.holdersCount;
@@ -500,6 +586,12 @@ const Aggregator = {
       bestHolders = dexHolders;
       holdersSource = 'DexScreener';
       holdersCount = dexScreener.value.topHoldersCount;
+    }
+    
+    // Fallback to Ethplorer holders count if available
+    if (holdersCount === 0 && ethplorer.status === 'fulfilled' && ethplorer.value.found) {
+      holdersCount = ethplorer.value.holdersCount;
+    }
     }
     
     // Fallback to Ethplorer holders count if available
