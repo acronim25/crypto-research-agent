@@ -222,23 +222,25 @@ const Aggregator = {
   // MORALIS API - Top Token Holders (Free tier available)
   // ============================================
   async fetchMoralisData(contractAddress, apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImQ0M2VlNjE5LWNkNmUtNDVmZi04NTY2LTliYjk0YjhjYzJhYSIsIm9yZ0lkIjoiNTAwOTU1IiwidXNlcklkIjoiNTE1NDU5IiwidHlwZUlkIjoiZWNjMzU1NWItOWMxNS00OTgxLWI0MzYtOWNhZTc1MjNkZTkzIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NzEyODIzMzAsImV4cCI6NDkyNzA0MjMzMH0.iEIiyjdJ-sXe4XmO6qX1K-_1FbXl154ky1OcAdQk3Io') {
+    console.log('🔍 Moralis: Starting fetch for contract:', contractAddress);
+    
     if (!contractAddress || !contractAddress.startsWith('0x')) {
+      console.log('❌ Moralis: Invalid contract address');
       return { found: false };
     }
     
     const cacheKey = `moralis_${contractAddress}`;
     const cached = this.getCached(cacheKey);
-    if (cached) return cached;
+    if (cached) {
+      console.log('📦 Moralis: Using cached data for', contractAddress);
+      return cached;
+    }
     
     try {
-      console.log('🔍 Moralis: Fetching top holders for:', contractAddress);
-      
-      // Note: Moralis requires API key. This is a placeholder structure.
-      // To use: Sign up at https://admin.moralis.io/ and get free API key
-      // Free tier: 25,000 requests/month
+      console.log('🌐 Moralis: Fetching from API for', contractAddress);
       
       if (!apiKey) {
-        console.log('⚠️ Moralis: No API key provided, skipping');
+        console.log('❌ Moralis: No API key provided');
         return { found: false, error: 'No API key' };
       }
       
@@ -252,26 +254,27 @@ const Aggregator = {
         }
       );
       
-      console.log('💡 Moralis: Response status:', response.status);
+      console.log('📊 Moralis: Response status:', response.status);
       
       if (!response.ok) {
-        console.warn('⚠️ Moralis: HTTP error:', response.status);
         const errorText = await response.text();
-        console.warn('⚠️ Moralis: Error response:', errorText);
+        console.error('❌ Moralis: HTTP error', response.status, errorText);
         return { found: false, status: response.status, error: errorText };
       }
       
       const data = await response.json();
+      console.log('📦 Moralis: Raw data received:', data);
       
       if (!data.result || data.result.length === 0) {
-        console.warn('⚠️ Moralis: No holders found');
+        console.warn('⚠️ Moralis: No holders found for', contractAddress);
         return { found: false };
       }
       
-      console.log('✅ Moralis: Found', data.result.length, 'holders');
+      console.log('✅ Moralis: Found', data.result.length, 'holders for', contractAddress);
       
       // Calculate percentages
       const totalSupply = data.result.reduce((sum, h) => sum + parseFloat(h.balance), 0);
+      console.log('💰 Moralis: Total supply calculated:', totalSupply);
       
       const holders = data.result.map(h => ({
         address: h.owner_address,
@@ -289,10 +292,11 @@ const Aggregator = {
       };
       
       this.setCached(cacheKey, result);
+      console.log('💾 Moralis: Cached result for', contractAddress);
       return result;
       
     } catch (error) {
-      console.warn('❌ Moralis API error:', error);
+      console.error('❌ Moralis API error for', contractAddress, ':', error);
       return { found: false, error: error.message };
     }
   },
