@@ -252,7 +252,24 @@ const RealAPI = {
       
       // Agreghează date de la multiple surse
       console.log('🔄 Aggregating data from multiple sources...');
-      const contractAddress = coinData.contract_address || coin.platforms?.ethereum;
+      
+      // Extract contract address from multiple possible sources
+      let contractAddress = coinData.contract_address;
+      
+      // If no direct contract address, try platforms
+      if (!contractAddress && coinData.platforms) {
+        // Try Ethereum first, then other chains
+        contractAddress = coinData.platforms.ethereum || 
+                         coinData.platforms['binance-smart-chain'] ||
+                         coinData.platforms.polygon ||
+                         coinData.platforms.avalanche ||
+                         coinData.platforms.fantom ||
+                         Object.values(coinData.platforms)[0]; // fallback to first available
+      }
+      
+      console.log('📍 Contract address:', contractAddress);
+      console.log('📍 Platforms:', coinData.platforms);
+      
       const aggregatedData = await Aggregator.aggregateCoinData(
         coinData, 
         coin.id, 

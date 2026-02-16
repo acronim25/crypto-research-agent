@@ -153,26 +153,36 @@ const Aggregator = {
   // ============================================
   async fetchEthplorerData(contractAddress) {
     if (!contractAddress || !contractAddress.startsWith('0x')) {
+      console.log('⚠️ Ethplorer: Invalid contract address:', contractAddress);
       return { found: false };
     }
     
     const cacheKey = `ethplorer_${contractAddress}`;
     const cached = this.getCached(cacheKey);
-    if (cached) return cached;
+    if (cached) {
+      console.log('📦 Ethplorer: Using cached data');
+      return cached;
+    }
     
     try {
+      console.log('🔍 Ethplorer: Fetching data for:', contractAddress);
+      
       // Ethplorer free API - no key required for basic data
       const response = await fetch(`https://api.ethplorer.io/getTokenInfo/${contractAddress}?apiKey=freekey`);
       
       if (!response.ok) {
+        console.warn('⚠️ Ethplorer: HTTP error:', response.status);
         return { found: false, status: response.status };
       }
       
       const data = await response.json();
       
       if (!data || data.error) {
+        console.warn('⚠️ Ethplorer: API error:', data?.error?.message || 'Unknown error');
         return { found: false, error: data?.error?.message };
       }
+      
+      console.log('✅ Ethplorer: Data found for', data.name, '- Holders:', data.holdersCount);
       
       // Get top holders
       const topHolders = data.holders?.slice(0, 10).map(h => ({
@@ -203,7 +213,7 @@ const Aggregator = {
       return result;
       
     } catch (error) {
-      console.warn('Ethplorer API error:', error);
+      console.warn('❌ Ethplorer API error:', error);
       return { found: false, error: error.message };
     }
   },
