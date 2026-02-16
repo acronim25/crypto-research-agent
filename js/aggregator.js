@@ -510,16 +510,6 @@ const Aggregator = {
       count: holdersCount,
       source: holdersSource
     };
-        ? dexScreener.value.topHoldersCount
-        : 0;
-    
-    console.log('💡 Aggregator - Selected:', bestHolders.length, 'holders from', holdersSource, 'Total count:', holdersCount);
-    
-    aggregated.combined.holders = {
-      topHolders: bestHolders,
-      count: holdersCount,
-      source: holdersSource
-    };
     
     // Combine tax data
     const buyTax = dexScreener.status === 'fulfilled' && dexScreener.value.found
