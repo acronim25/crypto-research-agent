@@ -502,10 +502,12 @@ const Aggregator = {
   // ============================================
   async aggregateCoinData(coinGeckoData, coinId, coinName, contractAddress = null) {
     console.log('🔄 Aggregating data from multiple sources...');
+    console.log('📍 Contract address for aggregation:', contractAddress);
     
     const symbol = coinGeckoData.symbol?.toUpperCase();
     
     // Fetch all sources in parallel
+    console.log('🌐 Starting parallel fetch for all sources...');
     const [defiLlama, dexScreener, messari, cmc, ethplorer, etherscan, moralis] = await Promise.allSettled([
       this.fetchDefiLlamaData(coinId, coinName),
       contractAddress ? this.fetchDexScreenerData(contractAddress) : Promise.resolve({ found: false }),
@@ -513,8 +515,18 @@ const Aggregator = {
       this.fetchCoinMarketCapData(symbol),
       contractAddress ? this.fetchEthplorerData(contractAddress) : Promise.resolve({ found: false }),
       contractAddress ? this.fetchEtherscanData(contractAddress) : Promise.resolve({ found: false }),
-      contractAddress ? this.fetchMoralisData(contractAddress) : Promise.resolve({ found: false })
+      contractAddress ? this.fetchMoralisData(contractAddress) : Promise.resolve({ found: false, error: 'No contract address' })
     ]);
+    
+    console.log('📊 All sources fetched:', {
+      defiLlama: defiLlama.status,
+      dexScreener: dexScreener.status, 
+      messari: messari.status,
+      cmc: cmc.status,
+      ethplorer: ethplorer.status,
+      etherscan: etherscan.status,
+      moralis: moralis.status
+    });
     
     const aggregated = {
       sources: {
