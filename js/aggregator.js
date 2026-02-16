@@ -592,12 +592,6 @@ const Aggregator = {
     if (holdersCount === 0 && ethplorer.status === 'fulfilled' && ethplorer.value.found) {
       holdersCount = ethplorer.value.holdersCount;
     }
-    }
-    
-    // Fallback to Ethplorer holders count if available
-    if (holdersCount === 0 && ethplorer.status === 'fulfilled' && ethplorer.value.found) {
-      holdersCount = ethplorer.value.holdersCount;
-    }
     
     console.log('💡 Aggregator - Selected:', bestHolders.length, 'holders from', holdersSource, 'Total count:', holdersCount);
     
