@@ -245,6 +245,8 @@ const Aggregator = {
       
       const data = await response.json();
       
+      console.log('💡 Etherscan API response:', { status: data.status, message: data.message, resultCount: data.result?.length });
+      
       if (data.status !== '1' || !data.result) {
         console.warn('⚠️ Etherscan: API error:', data.message || 'Unknown error');
         return { found: false, error: data.message };
@@ -256,6 +258,8 @@ const Aggregator = {
         balance: h.TokenHolderQuantity,
         percentage: null // Will calculate below
       }));
+      
+      console.log('💡 Etherscan: Parsed holders:', holders.length);
       
       // Get token supply to calculate percentages
       const supplyResponse = await fetch(
