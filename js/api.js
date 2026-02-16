@@ -228,6 +228,7 @@ const Analyzer = {
 // Real API Functions
 const RealAPI = {
   async createResearch(input) {
+    console.log('🚀 createResearch called with:', input);
     try {
       console.log('🔍 Searching for:', input);
       
@@ -251,7 +252,7 @@ const RealAPI = {
       const researchId = `research_${coin.id}_${Date.now()}`;
       
       // Agreghează date de la multiple surse
-      console.log('🔄 Aggregating data from multiple sources...');
+      console.log('🔄 About to start aggregation...');
       console.log('🔧 Aggregator available:', typeof Aggregator !== 'undefined');
       
       // Extract contract address from multiple possible sources
@@ -276,6 +277,7 @@ const RealAPI = {
         console.error('❌ Aggregator is not defined! Check if aggregator.js is loaded.');
       } else {
         try {
+          console.log('🔄 Calling Aggregator.aggregateCoinData...');
           aggregatedData = await Aggregator.aggregateCoinData(
             coinData, 
             coin.id, 
