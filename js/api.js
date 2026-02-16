@@ -258,7 +258,7 @@ const RealAPI = {
           id: researchId,
           status: "complete",
           timestamp: new Date().toISOString(),
-          redirect_url: `/research.html?id=${researchId}`
+          redirect_url: `/research.html#${researchId}`
         }
       };
       

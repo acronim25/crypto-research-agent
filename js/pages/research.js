@@ -3,9 +3,8 @@
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Get research ID from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const researchId = urlParams.get('id');
+  // Get research ID from URL hash (e.g., #research_bitcoin_123)
+  const researchId = window.location.hash.slice(1); // Remove # from start
 
   if (!researchId) {
     showError('ID-ul research-ului nu a fost specificat.');
