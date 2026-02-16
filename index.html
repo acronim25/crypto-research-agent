@@ -638,7 +638,16 @@
   <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
-  <!-- <script src="js/api-mock.js"></script> -->
+  <script>
+    console.log('✅ Scripts loaded:', {
+      config: typeof CONFIG !== 'undefined',
+      api: typeof API !== 'undefined',
+      coinGecko: typeof CoinGeckoAPI !== 'undefined'
+    });
+  </script>
   <script src="js/pages/index.js"></script>
+  <script>
+    console.log('✅ Page script loaded');
+  </script>
 </body>
 </html>
