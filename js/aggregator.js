@@ -229,7 +229,7 @@ const Aggregator = {
       return { found: false };
     }
     
-    const cacheKey = `moralis_${contractAddress}`;
+    const cacheKey = `moralis_${contractAddress}_${Date.now()}`;
     const cached = this.getCached(cacheKey);
     if (cached) {
       console.log('📦 Moralis: Using cached data for', contractAddress);
