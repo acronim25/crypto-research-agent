@@ -392,6 +392,7 @@ const RealAPI = {
       }
       
       if (combined.holders) {
+        console.log('💡 Processing holders data:', combined.holders);
         research.tokenomics.holders_count = combined.holders.count || research.tokenomics.holders_count;
         research.tokenomics.top_holders = combined.holders.topHolders;
         
@@ -399,8 +400,15 @@ const RealAPI = {
         if (combined.holders.topHolders?.length > 0) {
           const top10Percentage = combined.holders.topHolders
             .slice(0, 10)
-            .reduce((sum, h) => sum + (parseFloat(h.percentage) || 0), 0);
+            .reduce((sum, h) => {
+              const pct = parseFloat(h.percentage) || 0;
+              console.log('  Holder:', h.address?.slice(0, 8), 'Percentage:', pct);
+              return sum + pct;
+            }, 0);
+          console.log('💡 Calculated top 10%:', top10Percentage);
           research.tokenomics.top_10_holders_percentage = top10Percentage;
+        } else {
+          console.log('💡 No top holders data available');
         }
       }
       
