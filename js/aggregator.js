@@ -235,7 +235,7 @@ const Aggregator = {
       
       // Etherscan API - Get Token Holder List
       const response = await fetch(
-        `https://api.therscan.io/api?module=token&action=tokenholderlist&contractaddress=${contractAddress}&page=1&offset=10&apikey=${apiKey}`
+        `https://api.etherscan.io/api?module=token&action=tokenholderlist&contractaddress=${contractAddress}&page=1&offset=10&apikey=${apiKey}`
       );
       
       if (!response.ok) {
