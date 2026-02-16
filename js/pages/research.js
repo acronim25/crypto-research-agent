@@ -74,7 +74,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (response.success) {
       console.log('📊 Research data:', response.data);
       console.log('📍 Contract address:', response.data.token?.address);
-      console.log('👥 Holders data:', response.data.tokenomics?.holders_count, 'Source:', response.data.aggregated_sources);
+      console.log('👥 Holders count:', response.data.tokenomics?.holders_count);
+      console.log('📈 Top holders:', response.data.tokenomics?.top_holders?.length);
+      console.log('🔗 Aggregated sources:', response.data.aggregated_sources);
       renderResearch(response.data);
     } else {
       showError(response.error || 'Raportul nu a fost găsit.');
@@ -139,17 +141,19 @@ function renderResearch(data) {
   if (data.tokenomics) {
     // Check if we have real holder data from aggregated sources
     const hasRealHolderData = data.aggregated_sources?.successful > 1;
-    const holderCount = data.tokenomics.top_holders?.length > 0 
+    const holderCount = data.tokenomics.holders_count > 0 
       ? data.tokenomics.holders_count 
       : null;
     const top10Percentage = data.tokenomics.top_10_holders_percentage;
+    
+    console.log('💡 Holder display:', { hasRealHolderData, holderCount, top10Percentage });
     
     const tokenomicsStats = [
       { label: 'Market Cap', value: formatters.marketCap(data.tokenomics.market_cap) },
       { label: 'FDV', value: formatters.marketCap(data.tokenomics.fully_diluted_valuation) },
       { label: 'Supply Total', value: formatters.number(data.tokenomics.total_supply) },
       { label: 'În Circulație', value: formatters.number(data.tokenomics.circulating_supply) },
-      { label: 'Holders', value: formatters.holders(holderCount, hasRealHolderData) },
+      { label: 'Holders', value: holderCount ? formatters.number(holderCount) : 'N/A' },
       { label: 'Top 10 %', value: top10Percentage ? `${top10Percentage.toFixed(2)}%` : 'N/A' }
     ];
     
