@@ -270,13 +270,18 @@ const RealAPI = {
       console.log('📍 Contract address:', contractAddress);
       console.log('📍 Platforms:', coinData.platforms);
       
-      const aggregatedData = await Aggregator.aggregateCoinData(
-        coinData, 
-        coin.id, 
-        coinData.name,
-        contractAddress
-      );
-      console.log('✅ Aggregation complete:', Aggregator.getSourcesSummary(aggregatedData));
+      let aggregatedData = null;
+      try {
+        aggregatedData = await Aggregator.aggregateCoinData(
+          coinData, 
+          coin.id, 
+          coinData.name,
+          contractAddress
+        );
+        console.log('✅ Aggregation complete:', Aggregator.getSourcesSummary(aggregatedData));
+      } catch (aggError) {
+        console.error('❌ Aggregation error:', aggError);
+      }
       
       // Construiește obiectul research cu date agregate
       const research = this.buildResearchObject(researchId, coinData, aggregatedData);
