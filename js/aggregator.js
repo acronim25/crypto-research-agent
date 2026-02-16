@@ -221,7 +221,7 @@ const Aggregator = {
   // ============================================
   // ETHERSCAN API - Top Token Holders
   // ============================================
-  async fetchEtherscanData(contractAddress, apiKey = 'YourApiKeyToken') {
+  async fetchEtherscanData(contractAddress, apiKey = 'C4H5JJ8Q535A9ACPGYPIPJS36Z2QFZIBW3') {
     if (!contractAddress || !contractAddress.startsWith('0x')) {
       return { found: false };
     }
