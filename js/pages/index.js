@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (response.success) {
         // Redirect to research page
-        window.location.href = `/research.html?id=${response.data.id}`;
+        window.location.href = `research.html#${response.data.id}`;
       } else {
         throw new Error(response.error?.message || 'Eroare necunoscută');
       }
