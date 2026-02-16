@@ -5,6 +5,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // Get research ID from URL hash (e.g., #research_bitcoin_123)
   const researchId = window.location.hash.slice(1); // Remove # from start
+  
+  console.log('🔍 Looking for research:', researchId);
+  console.log('📦 localStorage keys:', Object.keys(localStorage));
 
   if (!researchId) {
     showError('ID-ul research-ului nu a fost specificat.');
@@ -14,14 +17,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load research data
   try {
     const response = await API.getResearch(researchId);
+    console.log('📊 API response:', response);
     
     if (response.success) {
       renderResearch(response.data);
     } else {
-      showError(response.error?.message || 'Raportul nu a fost găsit.');
+      showError(response.error || 'Raportul nu a fost găsit.');
     }
   } catch (error) {
-    console.error('Error loading research:', error);
+    console.error('❌ Error loading research:', error);
     showError('Eroare la încărcarea raportului. Încearcă din nou.');
   }
 

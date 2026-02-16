@@ -229,8 +229,11 @@ const Analyzer = {
 const RealAPI = {
   async createResearch(input) {
     try {
+      console.log('🔍 Searching for:', input);
+      
       // Caută token-ul
       const searchResults = await CoinGeckoAPI.searchToken(input);
+      console.log('📊 Search results:', searchResults);
       
       if (!searchResults.coins || searchResults.coins.length === 0) {
         throw new Error('Token negăsit. Încearcă alt ticker sau adresă.');
@@ -238,16 +241,21 @@ const RealAPI = {
       
       // Ia primul rezultat (cel mai relevant)
       const coin = searchResults.coins[0];
+      console.log('🎯 Selected coin:', coin.id);
       
       // Ia date complete
       const coinData = await CoinGeckoAPI.getCoinData(coin.id);
+      console.log('📈 Coin data received:', coinData.name);
       
       // Generează ID unic pentru research
       const researchId = `research_${coin.id}_${Date.now()}`;
       
       // Salvează în localStorage pentru a simula "baza de date"
       const research = this.buildResearchObject(researchId, coinData);
+      console.log('💾 Saving research:', researchId);
+      
       localStorage.setItem(researchId, JSON.stringify(research));
+      console.log('✅ Research saved to localStorage');
       
       // Adaugă la istoric
       this.addToHistory(research);
@@ -263,7 +271,7 @@ const RealAPI = {
       };
       
     } catch (error) {
-      console.error('Research error:', error);
+      console.error('❌ Research error:', error);
       return {
         success: false,
         error: error.message || 'Eroare la procesarea request-ului'
