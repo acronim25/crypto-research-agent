@@ -30,7 +30,7 @@ const formatters = {
   },
   
   number: (value) => {
-    if (!value || value === 0) return '0';
+    if (!value || value === 0 || value === null || value === undefined) return 'N/A';
     if (value >= 1e9) {
       return (value / 1e9).toFixed(2) + 'B';
     } else if (value >= 1e6) {
@@ -45,6 +45,12 @@ const formatters = {
     if (value === null || value === undefined) return '--';
     const sign = value > 0 ? '+' : '';
     return sign + value.toFixed(2) + '%';
+  },
+  
+  // Special formatter for holders
+  holders: (value, hasRealData) => {
+    if (!hasRealData || !value || value === 0) return 'N/A';
+    return formatters.number(value);
   }
 };
 
@@ -128,17 +134,33 @@ function renderResearch(data) {
 
   // Tokenomics Stats
   if (data.tokenomics) {
+    // Check if we have real holder data from aggregated sources
+    const hasRealHolderData = data.aggregated_sources?.successful > 1;
+    const holderCount = data.tokenomics.top_holders?.length > 0 
+      ? data.tokenomics.holders_count 
+      : null;
+    const top10Percentage = data.tokenomics.top_10_holders_percentage;
+    
     const tokenomicsStats = [
       { label: 'Market Cap', value: formatters.marketCap(data.tokenomics.market_cap) },
       { label: 'FDV', value: formatters.marketCap(data.tokenomics.fully_diluted_valuation) },
       { label: 'Supply Total', value: formatters.number(data.tokenomics.total_supply) },
       { label: 'În Circulație', value: formatters.number(data.tokenomics.circulating_supply) },
-      { label: 'Holders', value: formatters.number(data.tokenomics.holders_count) },
-      { label: 'Top 10 %', value: `${data.tokenomics.top_10_holders_percentage?.toFixed(2) || '--'}%` }
+      { label: 'Holders', value: formatters.holders(holderCount, hasRealHolderData) },
+      { label: 'Top 10 %', value: top10Percentage ? `${top10Percentage.toFixed(2)}%` : 'N/A' }
     ];
     
     const tokenomicsGrid = new DataGrid(tokenomicsStats, 3);
     tokenomicsGrid.mount(document.getElementById('tokenomicsStats'));
+    
+    // Add note about data sources if we don't have real holder data
+    if (!hasRealHolderData || !holderCount) {
+      const holdersNote = document.createElement('p');
+      holdersNote.className = 'text-sm text-muted mt-2';
+      holdersNote.style.cssText = 'color: rgba(0, 245, 212, 0.6); font-style: italic;';
+      holdersNote.innerHTML = '💡 Date despre holders indisponibile pentru acest token. DexScreener are aceste date doar pentru token-uri DEX.';
+      document.getElementById('tokenomicsStats').appendChild(holdersNote);
+    }
   }
 
   // On-Chain Stats

@@ -149,6 +149,66 @@ const Aggregator = {
   },
 
   // ============================================
+  // ETHPLORER API - Token Holders (Free tier)
+  // ============================================
+  async fetchEthplorerData(contractAddress) {
+    if (!contractAddress || !contractAddress.startsWith('0x')) {
+      return { found: false };
+    }
+    
+    const cacheKey = `ethplorer_${contractAddress}`;
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
+    
+    try {
+      // Ethplorer free API - no key required for basic data
+      const response = await fetch(`https://api.ethplorer.io/getTokenInfo/${contractAddress}?apiKey=freekey`);
+      
+      if (!response.ok) {
+        return { found: false, status: response.status };
+      }
+      
+      const data = await response.json();
+      
+      if (!data || data.error) {
+        return { found: false, error: data?.error?.message };
+      }
+      
+      // Get top holders
+      const topHolders = data.holders?.slice(0, 10).map(h => ({
+        address: h.address,
+        balance: h.balance,
+        percentage: (h.share * 100).toFixed(2)
+      })) || [];
+      
+      const result = {
+        found: true,
+        contractAddress,
+        name: data.name,
+        symbol: data.symbol,
+        decimals: data.decimals,
+        totalSupply: data.totalSupply,
+        holdersCount: data.holdersCount,
+        topHolders: topHolders,
+        topHoldersCount: data.holdersCount,
+        price: data.price,
+        marketCap: data.marketCapUsd,
+        totalSupplyFormatted: data.totalSupply / Math.pow(10, data.decimals || 18),
+        transfersCount: data.transfersCount,
+        ethTransfersCount: data.ethTransfersCount,
+        lastUpdated: data.lastUpdated
+      };
+      
+      this.setCached(cacheKey, result);
+      return result;
+      
+    } catch (error) {
+      console.warn('Ethplorer API error:', error);
+      return { found: false, error: error.message };
+    }
+  },
+
+  // ============================================
   // ETHERSCAN API - Contract Verification & Holders
   // ============================================
   async fetchEtherscanData(contractAddress, apiKey = null) {
@@ -308,11 +368,12 @@ const Aggregator = {
     const symbol = coinGeckoData.symbol?.toUpperCase();
     
     // Fetch all sources in parallel
-    const [defiLlama, dexScreener, messari, cmc] = await Promise.allSettled([
+    const [defiLlama, dexScreener, messari, cmc, ethplorer] = await Promise.allSettled([
       this.fetchDefiLlamaData(coinId, coinName),
       contractAddress ? this.fetchDexScreenerData(contractAddress) : Promise.resolve({ found: false }),
       this.fetchMessariData(symbol),
-      this.fetchCoinMarketCapData(symbol)
+      this.fetchCoinMarketCapData(symbol),
+      contractAddress ? this.fetchEthplorerData(contractAddress) : Promise.resolve({ found: false })
     ]);
     
     const aggregated = {
@@ -321,7 +382,8 @@ const Aggregator = {
         defiLlama: defiLlama.status === 'fulfilled' ? defiLlama.value : { error: defiLlama.reason },
         dexScreener: dexScreener.status === 'fulfilled' ? dexScreener.value : { error: dexScreener.reason },
         messari: messari.status === 'fulfilled' ? messari.value : { error: messari.reason },
-        coinMarketCap: cmc.status === 'fulfilled' ? cmc.value : { error: cmc.reason }
+        coinMarketCap: cmc.status === 'fulfilled' ? cmc.value : { error: cmc.reason },
+        ethplorer: ethplorer.status === 'fulfilled' ? ethplorer.value : { error: ethplorer.reason }
       },
       combined: {}
     };
@@ -345,15 +407,28 @@ const Aggregator = {
     if (dexLiquidity > 0) aggregated.combined.liquidity.sources.push('DexScreener');
     if (defiTvl > 0) aggregated.combined.liquidity.sources.push('DefiLlama');
     
-    // Combine holder data
-    const dexHolders = dexScreener.status === 'fulfilled' && dexScreener.value.found
-      ? dexScreener.value.topHolders
+    // Combine holder data from multiple sources
+    const dexHolders = dexScreener.status === 'fulfilled' && dexScreener.value.found 
+      ? dexScreener.value.topHolders 
       : [];
     
+    const ethplorerHolders = ethplorer.status === 'fulfilled' && ethplorer.value.found
+      ? ethplorer.value.topHolders
+      : [];
+    
+    // Prioritize Ethplorer for Ethereum tokens as it has better holder data
+    const bestHolders = ethplorerHolders.length > 0 ? ethplorerHolders : dexHolders;
+    const holdersSource = ethplorerHolders.length > 0 ? 'Ethplorer' : dexHolders.length > 0 ? 'DexScreener' : null;
+    const holdersCount = ethplorer.status === 'fulfilled' && ethplorer.value.found
+      ? ethplorer.value.holdersCount
+      : dexScreener.status === 'fulfilled' && dexScreener.value.found
+        ? dexScreener.value.topHoldersCount
+        : 0;
+    
     aggregated.combined.holders = {
-      topHolders: dexHolders,
-      count: dexHolders.length,
-      source: dexHolders.length > 0 ? 'DexScreener' : null
+      topHolders: bestHolders,
+      count: holdersCount,
+      source: holdersSource
     };
     
     // Combine tax data
