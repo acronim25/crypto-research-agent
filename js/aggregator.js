@@ -233,9 +233,9 @@ const Aggregator = {
     try {
       console.log('🔍 Etherscan: Fetching top holders for:', contractAddress);
       
-      // Etherscan API - Get Token Holder List
+      // Etherscan API V2 - Get Token Holder List
       const response = await fetch(
-        `https://api.etherscan.io/api?module=token&action=tokenholderlist&contractaddress=${contractAddress}&page=1&offset=10&apikey=${apiKey}`
+        `https://api.etherscan.io/v2/api?chainid=1&module=token&action=tokenholderlist&contractaddress=${contractAddress}&page=1&offset=10&apikey=${apiKey}`
       );
       
       if (!response.ok) {
@@ -263,7 +263,7 @@ const Aggregator = {
       
       // Get token supply to calculate percentages
       const supplyResponse = await fetch(
-        `https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=${contractAddress}&apikey=${apiKey}`
+        `https://api.etherscan.io/v2/api?chainid=1&module=stats&action=tokensupply&contractaddress=${contractAddress}&apikey=${apiKey}`
       );
       
       let totalSupply = 0;
