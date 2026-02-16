@@ -2,10 +2,12 @@
 
 Generează rapoarte complete și analize de risc pentru token-uri crypto în câteva secunde.
 
+**Status:** ✅ Demo mode activ - testează acum!
+
 ## 🚀 Live Demo
 
-- **Frontend:** https://crypto-research-agent.github.io
-- **API:** https://crypto-research-api.vercel.app
+- **Frontend:** https://acronim25.github.io/crypto-research-agent
+- **API:** https://crypto-research-api.vercel.app (opțional)
 
 ## ✨ Features
 
