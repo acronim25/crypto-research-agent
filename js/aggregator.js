@@ -426,6 +426,8 @@ const Aggregator = {
       ? ethplorer.value.topHolders
       : [];
     
+    console.log('💡 Aggregator - Ethplorer holders:', ethplorerHolders.length, 'DexScreener holders:', dexHolders.length);
+    
     // Prioritize Ethplorer for Ethereum tokens as it has better holder data
     const bestHolders = ethplorerHolders.length > 0 ? ethplorerHolders : dexHolders;
     const holdersSource = ethplorerHolders.length > 0 ? 'Ethplorer' : dexHolders.length > 0 ? 'DexScreener' : null;
@@ -434,6 +436,8 @@ const Aggregator = {
       : dexScreener.status === 'fulfilled' && dexScreener.value.found
         ? dexScreener.value.topHoldersCount
         : 0;
+    
+    console.log('💡 Aggregator - Selected:', bestHolders.length, 'holders from', holdersSource, 'Total count:', holdersCount);
     
     aggregated.combined.holders = {
       topHolders: bestHolders,
