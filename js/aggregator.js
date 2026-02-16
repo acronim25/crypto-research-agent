@@ -247,7 +247,7 @@ const Aggregator = {
         {
           headers: {
             'Accept': 'application/json',
-            'X-API-Key': apiKey
+            'x-api-key': apiKey
           }
         }
       );
