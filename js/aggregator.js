@@ -252,9 +252,13 @@ const Aggregator = {
         }
       );
       
+      console.log('💡 Moralis: Response status:', response.status);
+      
       if (!response.ok) {
         console.warn('⚠️ Moralis: HTTP error:', response.status);
-        return { found: false, status: response.status };
+        const errorText = await response.text();
+        console.warn('⚠️ Moralis: Error response:', errorText);
+        return { found: false, status: response.status, error: errorText };
       }
       
       const data = await response.json();
