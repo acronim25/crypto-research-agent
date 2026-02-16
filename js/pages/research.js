@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('📊 API response:', response);
     
     if (response.success) {
+      console.log('📊 Research data:', response.data);
+      console.log('📍 Contract address:', response.data.token?.address);
+      console.log('👥 Holders data:', response.data.tokenomics?.holders_count, 'Source:', response.data.aggregated_sources);
       renderResearch(response.data);
     } else {
       showError(response.error || 'Raportul nu a fost găsit.');
