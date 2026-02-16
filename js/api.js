@@ -252,6 +252,7 @@ const RealAPI = {
       
       // Agreghează date de la multiple surse
       console.log('🔄 Aggregating data from multiple sources...');
+      console.log('🔧 Aggregator available:', typeof Aggregator !== 'undefined');
       
       // Extract contract address from multiple possible sources
       let contractAddress = coinData.contract_address;
@@ -271,16 +272,20 @@ const RealAPI = {
       console.log('📍 Platforms:', coinData.platforms);
       
       let aggregatedData = null;
-      try {
-        aggregatedData = await Aggregator.aggregateCoinData(
-          coinData, 
-          coin.id, 
-          coinData.name,
-          contractAddress
-        );
-        console.log('✅ Aggregation complete:', Aggregator.getSourcesSummary(aggregatedData));
-      } catch (aggError) {
-        console.error('❌ Aggregation error:', aggError);
+      if (typeof Aggregator === 'undefined') {
+        console.error('❌ Aggregator is not defined! Check if aggregator.js is loaded.');
+      } else {
+        try {
+          aggregatedData = await Aggregator.aggregateCoinData(
+            coinData, 
+            coin.id, 
+            coinData.name,
+            contractAddress
+          );
+          console.log('✅ Aggregation complete:', Aggregator.getSourcesSummary(aggregatedData));
+        } catch (aggError) {
+          console.error('❌ Aggregation error:', aggError);
+        }
       }
       
       // Construiește obiectul research cu date agregate
