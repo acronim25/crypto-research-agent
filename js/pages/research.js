@@ -121,12 +121,20 @@ function renderResearch(data) {
   // Price Chart
   if (typeof PriceChart !== 'undefined') {
     try {
-      // Generate mock price data based on current price
-      const currentPrice = data.price_data?.current_price || 1;
-      const mockPrices = PriceChart.generateMockData(currentPrice, 30).prices;
+      // Use real price history if available, otherwise generate mock data
+      const priceHistory = data.price_history;
+      console.log('📊 Price history from API:', priceHistory?.length, 'points');
       
-      const priceChart = new PriceChart('priceChart', { prices: mockPrices });
-      priceChart.render();
+      if (priceHistory && priceHistory.length > 0) {
+        const priceChart = new PriceChart('priceChart', { prices: priceHistory });
+        priceChart.render();
+      } else {
+        // Fallback to mock data
+        const currentPrice = data.price_data?.current_price || 1;
+        const mockPrices = PriceChart.generateMockData(currentPrice, 30).prices;
+        const priceChart = new PriceChart('priceChart', { prices: mockPrices });
+        priceChart.render();
+      }
     } catch (chartError) {
       console.error('Error rendering price chart:', chartError);
     }

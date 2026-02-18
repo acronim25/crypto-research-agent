@@ -17,6 +17,12 @@ const CoinGeckoAPI = {
     if (!response.ok) throw new Error('Failed to fetch coin data');
     return await response.json();
   },
+  
+  async getMarketChart(coinId, days = 30) {
+    const response = await fetch(`${this.baseUrl}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+    if (!response.ok) throw new Error('Failed to fetch market chart');
+    return await response.json();
+  },
 
   async getTrending() {
     const response = await fetch(`${this.baseUrl}/search/trending`);
@@ -92,6 +98,8 @@ const RealAPI = {
 
       // Aggregate data
       let aggregatedData = null;
+      let priceHistory = null;
+      
       if (typeof Aggregator !== 'undefined') {
         try {
           aggregatedData = await Aggregator.aggregateCoinData(coinData, coin.id, coin.name, contractAddress);
@@ -99,9 +107,19 @@ const RealAPI = {
           console.warn('Aggregator error:', e);
         }
       }
+      
+      // Fetch price history from CoinGecko
+      try {
+        console.log('📊 Fetching price history for', coin.id);
+        const marketChart = await CoinGeckoAPI.getMarketChart(coin.id, 30);
+        priceHistory = marketChart.prices;
+        console.log('✅ Price history fetched:', priceHistory?.length, 'data points');
+      } catch (e) {
+        console.warn('Price history fetch error:', e);
+      }
 
       // Build research object
-      const research = this.buildResearchObject(researchId, coinData, aggregatedData);
+      const research = this.buildResearchObject(researchId, coinData, aggregatedData, priceHistory);
 
       // Save to localStorage
       localStorage.setItem(researchId, JSON.stringify(research));
@@ -126,7 +144,7 @@ const RealAPI = {
     }
   },
 
-  buildResearchObject(id, coinData, aggregatedData = null) {
+  buildResearchObject(id, coinData, aggregatedData = null, priceHistory = null) {
     const marketData = coinData.market_data || {};
     const riskAnalysis = Analyzer.calculateRiskScore(coinData);
     const sentimentAnalysis = Analyzer.calculateSentiment(coinData);
@@ -159,6 +177,7 @@ const RealAPI = {
         price_change_7d: marketData.price_change_percentage_7d || 0,
         price_change_30d: marketData.price_change_percentage_30d || 0
       },
+      price_history: priceHistory,
       tokenomics: {
         total_supply: marketData.total_supply,
         circulating_supply: marketData.circulating_supply,
