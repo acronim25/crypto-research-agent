@@ -80,11 +80,6 @@ class PriceChart {
     this.container.innerHTML = '';
     this.container.appendChild(ctx);
     
-    console.log('🎨 Creating Chart.js instance...');
-    console.log('📐 Canvas dimensions:', ctx.width, 'x', ctx.height);
-    console.log('📊 Price values sample:', priceValues.slice(0, 5));
-    console.log('📅 Labels sample:', labels.slice(0, 5));
-
     // Extract price values and dates
     const priceValues = prices.map(p => {
       // Handle [timestamp, price] format
@@ -100,6 +95,11 @@ class PriceChart {
       date.setDate(date.getDate() - (prices.length - i));
       return date.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' });
     });
+    
+    console.log('🎨 Creating Chart.js instance...');
+    console.log('📐 Canvas dimensions:', ctx.width, 'x', ctx.height);
+    console.log('📊 Price values sample:', priceValues.slice(0, 5));
+    console.log('📅 Labels sample:', labels.slice(0, 5));
 
     this.chart = new Chart(ctx, {
       type: 'line',
