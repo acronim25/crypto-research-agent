@@ -10,16 +10,22 @@ class PriceChart {
   }
 
   render() {
+    console.log('🎨 PriceChart render called');
+    console.log('📍 Container:', this.container);
+    console.log('📊 Data:', this.data);
+    
     if (!this.container) {
-      console.warn('PriceChart: Container not found');
+      console.warn('❌ PriceChart: Container not found');
       return;
     }
 
     if (!this.data || !this.data.prices || this.data.prices.length === 0) {
+      console.log('⚠️ PriceChart: No price data, rendering empty');
       this.renderEmpty();
       return;
     }
 
+    console.log('✅ PriceChart: Rendering chart with', this.data.prices.length, 'prices');
     this.renderChart();
   }
 
