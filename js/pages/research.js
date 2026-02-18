@@ -120,10 +120,16 @@ function renderResearch(data) {
 
   // Price Chart
   if (typeof PriceChart !== 'undefined') {
-    const priceChart = new PriceChart('priceChart', {
-      prices: data.price_history || PriceChart.generateMockData(data.price_data?.current_price || 1)
-    });
-    priceChart.render();
+    try {
+      // Generate mock price data based on current price
+      const currentPrice = data.price_data?.current_price || 1;
+      const mockPrices = PriceChart.generateMockData(currentPrice, 30).prices;
+      
+      const priceChart = new PriceChart('priceChart', { prices: mockPrices });
+      priceChart.render();
+    } catch (chartError) {
+      console.error('Error rendering price chart:', chartError);
+    }
   }
 
   // Risk Badge

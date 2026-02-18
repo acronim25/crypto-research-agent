@@ -33,18 +33,39 @@ class PriceChart {
   }
 
   renderChart() {
+    // Handle different price data formats
+    let prices = this.data.prices;
+    
+    // If prices is not an array or is undefined, generate mock data
+    if (!Array.isArray(prices)) {
+      console.warn('PriceChart: Invalid prices format, using mock data');
+      prices = PriceChart.generateMockData(1).prices;
+    }
+    
+    if (prices.length === 0) {
+      this.renderEmpty();
+      return;
+    }
+
     const ctx = document.createElement('canvas');
     this.container.innerHTML = '';
     this.container.appendChild(ctx);
 
-    const prices = this.data.prices;
+    // Extract price values and dates
+    const priceValues = prices.map(p => {
+      // Handle [timestamp, price] format
+      if (Array.isArray(p) && p.length >= 2) return p[1];
+      // Handle {price: value} format
+      if (typeof p === 'object' && p.price) return p.price;
+      // Handle plain number
+      return p;
+    }).filter(p => typeof p === 'number' && !isNaN(p));
+
     const labels = prices.map((_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (prices.length - i));
       return date.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' });
     });
-
-    const pricesValues = prices.map(p => p[1] || p);
 
     this.chart = new Chart(ctx, {
       type: 'line',
