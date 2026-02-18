@@ -19,6 +19,66 @@
   <link rel="stylesheet" href="css/05-components.css">
   <link rel="stylesheet" href="css/06-sections.css">
   <link rel="stylesheet" href="css/07-utilities.css">
+  
+  <!-- Cyberpunk Theme -->
+  <style>
+    :root {
+      --neon-cyan: #00f5d4;
+      --neon-green: #00ff88;
+      --dark-bg: #0a0f1c;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0a0f1c 0%, #0f172a 50%, #1a1033 100%);
+    }
+    
+    .header {
+      background: rgba(10, 15, 28, 0.9);
+      border-bottom: 1px solid rgba(0, 245, 212, 0.2);
+    }
+    
+    .header__logo {
+      color: var(--neon-cyan) !important;
+      font-family: 'JetBrains Mono', monospace;
+      text-shadow: 0 0 10px rgba(0, 245, 212, 0.5);
+    }
+    
+    .header__nav-link--active {
+      color: var(--neon-cyan) !important;
+    }
+    
+    h1 {
+      color: var(--color-text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      text-shadow: 0 0 20px rgba(0, 245, 212, 0.3);
+    }
+    
+    .history-filters {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(0, 245, 212, 0.15);
+    }
+    
+    .history-item {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(0, 245, 212, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .history-item:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 10px 40px rgba(0, 245, 212, 0.15);
+    }
+    
+    .history-item__ticker {
+      color: var(--neon-cyan);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .footer {
+      background: rgba(10, 15, 28, 0.9);
+      border-top: 1px solid rgba(0, 245, 212, 0.2);
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
