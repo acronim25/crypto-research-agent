@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Render items
     historyList.innerHTML = pageItems.map(research => `
-      <div class="history-item">
+      <div class="history-item" onclick="window.location.href='research.html#${research.id}'" style="cursor: pointer;">
         <div class="history-item__info">
           <img 
             src="${research.logo || 'https://via.placeholder.com/48'}" 
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           >
           <div class="history-item__details">
             <div class="history-item__name">${research.name || research.ticker}</div>
-            <div class="history-item__ticker">${research.ticker}</div>
+            <div class="history-item__ticker">$${research.ticker}</div>
             <div class="history-item__date">${formatters.date(research.created_at)}</div>
           </div>
         </div>
@@ -160,8 +160,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             ${research.risk_score}/10
           </span>
           
-          <div class="history-item__actions">
-            <a href="research.html?id=${research.id}" class="btn btn--secondary btn--sm">
+          <div class="history-item__actions" onclick="event.stopPropagation();">
+            <a href="research.html#${research.id}" class="btn btn--secondary btn--sm">
               <i class="fas fa-eye"></i>
             </a>
             <button class="btn btn--secondary btn--sm" onclick="researchAgain('${research.ticker}')">

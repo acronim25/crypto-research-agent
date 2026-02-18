@@ -452,6 +452,7 @@ const RealAPI = {
       id: research.id,
       ticker: research.token.ticker,
       name: research.token.name,
+      logo: research.token.logo,
       risk_score: research.analysis.risk_score,
       risk_class: research.analysis.risk_class,
       created_at: research.created_at
