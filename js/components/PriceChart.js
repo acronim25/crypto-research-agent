@@ -65,6 +65,10 @@ class PriceChart {
     this.container.style.height = '250px';
     this.container.style.width = '100%';
     this.container.style.position = 'relative';
+    this.container.style.backgroundColor = 'rgba(10, 15, 28, 0.5)';
+    this.container.style.border = '1px solid rgba(0, 245, 212, 0.2)';
+    this.container.style.borderRadius = '8px';
+    this.container.style.overflow = 'hidden';
 
     const ctx = document.createElement('canvas');
     // Set explicit dimensions for Chart.js
@@ -78,6 +82,8 @@ class PriceChart {
     
     console.log('🎨 Creating Chart.js instance...');
     console.log('📐 Canvas dimensions:', ctx.width, 'x', ctx.height);
+    console.log('📊 Price values sample:', priceValues.slice(0, 5));
+    console.log('📅 Labels sample:', labels.slice(0, 5));
 
     // Extract price values and dates
     const priceValues = prices.map(p => {
@@ -163,6 +169,15 @@ class PriceChart {
     
     console.log('✅ Chart.js instance created successfully');
     console.log('📊 Chart instance:', this.chart);
+    
+    // Force a resize to ensure the chart renders properly
+    setTimeout(() => {
+      if (this.chart) {
+        this.chart.resize();
+        this.chart.update();
+        console.log('🔄 Chart resized and updated');
+      }
+    }, 100);
   }
 
   // Generate mock price data for demo
