@@ -47,11 +47,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       filteredResearches = [...allResearches];
       
       console.log('📚 Total researches loaded:', allResearches.length);
+      console.log('📚 Sample items:', allResearches.slice(0, 3).map(r => ({id: r.id, ticker: r.ticker, risk_class: r.risk_class})));
       
       if (allResearches.length === 0) {
         showEmptyState();
       } else {
-        renderHistory();
+        applyFilters(); // Apply filters initially
       }
     } else {
       console.error('❌ History load failed:', response.error);
@@ -94,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Apply filters
   function applyFilters() {
+    console.log('🔍 Applying filters. allResearches count:', allResearches.length);
     const searchTerm = searchInput.value.toLowerCase();
     const riskLevel = riskFilter.value;
     const sortBy = sortFilter.value;
@@ -110,6 +112,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       return matchesSearch && matchesRisk;
     });
+    
+    console.log('📊 After filter:', filteredResearches.length);
 
     // Sort
     filteredResearches.sort((a, b) => {
@@ -128,15 +132,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           return 0;
       }
     });
+    
+    console.log('📊 After sort:', filteredResearches.length);
 
     renderHistory();
   }
 
   // Render history list
   function renderHistory() {
+    console.log('🎨 Rendering history. filteredResearches:', filteredResearches.length);
     loadingState.classList.add('hidden');
     
     if (filteredResearches.length === 0) {
+      console.log('⚠️ No items to render');
       historyList.classList.add('hidden');
       pagination.classList.add('hidden');
       emptyState.classList.remove('hidden');
