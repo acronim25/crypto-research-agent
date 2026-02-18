@@ -15,28 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     
     const input = tokenInput.value.trim();
-    console.log('📝 Form submitted with input:', input);
     if (!input) return;
     
-    // Reset UI
     hideError();
     showLoading();
     
     try {
-      console.log('🚀 Calling API.createResearch...');
-      // Create research
       const response = await API.createResearch(input);
-      console.log('📊 API response:', response);
       
       if (response.success) {
-        console.log('✅ Research created, redirecting to:', response.data.id);
-        // Redirect to research page
         window.location.href = `research.html#${response.data.id}`;
       } else {
         throw new Error(response.error?.message || 'Eroare necunoscută');
       }
     } catch (error) {
-      console.error('❌ Error in form submission:', error);
       hideLoading();
       showError(error.message || 'A apărut o eroare. Încearcă din nou.');
     }

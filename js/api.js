@@ -228,34 +228,62 @@ const Analyzer = {
 // Real API Functions
 const RealAPI = {
   async createResearch(input) {
-    console.log('🚀🚀🚀 createResearch STARTED with:', input);
-    console.log('🔧 API object:', typeof API);
-    console.log('🔧 RealAPI object:', typeof RealAPI);
     try {
-      console.log('🔍 Searching for:', input);
-      
       // Caută token-ul
       const searchResults = await CoinGeckoAPI.searchToken(input);
-      console.log('📊 Search results:', searchResults);
       
       if (!searchResults.coins || searchResults.coins.length === 0) {
         throw new Error('Token negăsit. Încearcă alt ticker sau adresă.');
       }
       
-      // Ia primul rezultat (cel mai relevant)
       const coin = searchResults.coins[0];
-      console.log('🎯 Selected coin:', coin.id);
-      
-      // Ia date complete de la CoinGecko
       const coinData = await CoinGeckoAPI.getCoinData(coin.id);
-      console.log('📈 Coin data received:', coinData.name);
-      
-      // Generează ID unic pentru research
       const researchId = `research_${coin.id}_${Date.now()}`;
       
-      // Agreghează date de la multiple surse
-      console.log('🔄 About to start aggregation...');
-      console.log('🔧 Aggregator available:', typeof Aggregator !== 'undefined');
+      // Agreghează date
+      let aggregatedData = null;
+      let contractAddress = coinData.contract_address;
+      
+      if (!contractAddress && coinData.platforms) {
+        contractAddress = coinData.platforms.ethereum || 
+                         coinData.platforms['binance-smart-chain'] ||
+                         Object.values(coinData.platforms)[0];
+      }
+      
+      if (typeof Aggregator !== 'undefined') {
+        try {
+          aggregatedData = await Aggregator.aggregateCoinData(coinData, coin.id, coin.name, contractAddress);
+        } catch (aggError) {
+          console.warn('Aggregator error:', aggError);
+        }
+      }
+      
+      // Construiește research
+      const research = this.buildResearchObject(researchId, coinData, aggregatedData);
+      
+      // Salvează
+      localStorage.setItem(researchId, JSON.stringify(research));
+      
+      // Adaugă la istoric
+      this.addToHistory(research);
+      
+      return {
+        success: true,
+        data: {
+          id: researchId,
+          status: "complete",
+          redirect_url: `research.html#${researchId}`
+        }
+      };
+      
+    } catch (error) {
+      console.error('Research error:', error);
+      return {
+        success: false,
+        error: error.message || 'Eroare la procesare'
+      };
+    }
+  },
       
       // Extract contract address from multiple possible sources
       let contractAddress = coinData.contract_address;
@@ -467,43 +495,32 @@ const RealAPI = {
   
   addToHistory(research) {
     try {
-      console.log('📝 Adding to history:', research?.id);
-      
-      if (!research || !research.id) {
+      if (!research?.id) {
         console.error('❌ Invalid research object:', research);
         return;
       }
       
       let history = JSON.parse(localStorage.getItem('research_history') || '[]');
-      console.log('📚 Current history items:', history.length);
       
       // Check if already exists
       const exists = history.some(item => item.id === research.id);
-      if (exists) {
-        console.log('⚠️ Research already in history, skipping');
-        return;
-      }
+      if (exists) return;
       
-      // Validate required fields
-      if (!research.token || !research.analysis) {
-        console.error('❌ Missing token or analysis data:', research);
-        return;
-      }
-      
+      // Add to history with fallback values
       history.unshift({
         id: research.id,
-        ticker: research.token.ticker,
-        name: research.token.name,
-        logo: research.token.logo,
-        risk_score: research.analysis.risk_score,
-        risk_class: research.analysis.risk_class,
-        created_at: research.created_at
+        ticker: research.token?.ticker || research.token?.symbol || 'N/A',
+        name: research.token?.name || 'Unknown',
+        logo: research.token?.logo || research.token?.image,
+        risk_score: research.analysis?.risk_score ?? 5,
+        risk_class: research.analysis?.risk_class || 'medium',
+        created_at: research.created_at || new Date().toISOString()
       });
       
-      // Păstrează doar ultimele 50
+      // Keep only last 50
       history = history.slice(0, 50);
       localStorage.setItem('research_history', JSON.stringify(history));
-      console.log('✅ History updated. Total items:', history.length);
+      console.log('✅ Added to history:', research.id, 'Total:', history.length);
     } catch (error) {
       console.error('❌ Error in addToHistory:', error);
     }
