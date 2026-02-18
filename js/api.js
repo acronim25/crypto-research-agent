@@ -115,8 +115,21 @@ const RealAPI = {
       // Build research object
       const research = this.buildResearchObject(researchId, coinData, aggregatedData, priceHistory);
 
-      // Save to localStorage
-      localStorage.setItem(researchId, JSON.stringify(research));
+      // Save to localStorage with quota handling
+      try {
+        localStorage.setItem(researchId, JSON.stringify(research));
+      } catch (quotaError) {
+        console.warn('⚠️ localStorage full, cleaning old research...');
+        // Remove oldest 10 research items
+        const researchKeys = Object.keys(localStorage).filter(k => k.startsWith('research_') && k !== 'research_history');
+        researchKeys.sort(); // Sort by ID (contains timestamp)
+        const keysToRemove = researchKeys.slice(0, 10);
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log('🧹 Removed', keysToRemove.length, 'old research items');
+        
+        // Try saving again
+        localStorage.setItem(researchId, JSON.stringify(research));
+      }
 
       // Add to history
       console.log('📝 About to add to history:', research?.id);
