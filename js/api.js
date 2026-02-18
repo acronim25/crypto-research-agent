@@ -112,7 +112,12 @@ const RealAPI = {
       try {
         console.log('📊 Fetching price history for', coin.id);
         const marketChart = await CoinGeckoAPI.getMarketChart(coin.id, 30);
-        priceHistory = marketChart.prices;
+        // Limit to ~30 data points (one per day) to avoid storage quota
+        if (marketChart.prices && marketChart.prices.length > 30) {
+          priceHistory = marketChart.prices.filter((_, i) => i % Math.ceil(marketChart.prices.length / 30) === 0).slice(0, 30);
+        } else {
+          priceHistory = marketChart.prices;
+        }
         console.log('✅ Price history fetched:', priceHistory?.length, 'data points');
       } catch (e) {
         console.warn('Price history fetch error:', e);
