@@ -67,10 +67,17 @@ class PriceChart {
     this.container.style.position = 'relative';
 
     const ctx = document.createElement('canvas');
+    // Set explicit dimensions for Chart.js
+    ctx.width = this.container.offsetWidth || 600;
+    ctx.height = 250;
+    ctx.style.width = '100%';
+    ctx.style.height = '250px';
+    
     this.container.innerHTML = '';
     this.container.appendChild(ctx);
     
     console.log('🎨 Creating Chart.js instance...');
+    console.log('📐 Canvas dimensions:', ctx.width, 'x', ctx.height);
 
     // Extract price values and dates
     const priceValues = prices.map(p => {
