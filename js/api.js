@@ -447,7 +447,16 @@ const RealAPI = {
   },
   
   addToHistory(research) {
+    console.log('📝 Adding to history:', research.id);
     let history = JSON.parse(localStorage.getItem('research_history') || '[]');
+    
+    // Check if already exists
+    const exists = history.some(item => item.id === research.id);
+    if (exists) {
+      console.log('⚠️ Research already in history, skipping');
+      return;
+    }
+    
     history.unshift({
       id: research.id,
       ticker: research.token.ticker,
@@ -460,6 +469,7 @@ const RealAPI = {
     // Păstrează doar ultimele 50
     history = history.slice(0, 50);
     localStorage.setItem('research_history', JSON.stringify(history));
+    console.log('✅ History updated. Total items:', history.length);
   },
   
   async getResearch(id) {
@@ -486,7 +496,12 @@ const RealAPI = {
   
   async getHistory(limit = 50, offset = 0) {
     try {
-      const history = JSON.parse(localStorage.getItem('research_history') || '[]');
+      const rawHistory = localStorage.getItem('research_history');
+      console.log('🔍 Raw history from localStorage:', rawHistory ? 'Found' : 'Not found');
+      
+      const history = JSON.parse(rawHistory || '[]');
+      console.log('📚 Parsed history items:', history.length);
+      
       const paginated = history.slice(offset, offset + limit);
       
       return {

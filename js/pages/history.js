@@ -22,12 +22,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pageInfo = document.getElementById('pageInfo');
 
   // Load data
+  console.log('📚 Loading history...');
   try {
     const response = await API.getHistory();
+    console.log('📊 History response:', response);
     
     if (response.success) {
       allResearches = response.data.researches || [];
       filteredResearches = [...allResearches];
+      
+      console.log('📚 Total researches loaded:', allResearches.length);
       
       if (allResearches.length === 0) {
         showEmptyState();
@@ -35,10 +39,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderHistory();
       }
     } else {
+      console.error('❌ History load failed:', response.error);
       showEmptyState();
     }
   } catch (error) {
-    console.error('Error loading history:', error);
+    console.error('❌ Error loading history:', error);
     showEmptyState();
   }
 
