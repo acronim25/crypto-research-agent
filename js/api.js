@@ -447,29 +447,47 @@ const RealAPI = {
   },
   
   addToHistory(research) {
-    console.log('📝 Adding to history:', research.id);
-    let history = JSON.parse(localStorage.getItem('research_history') || '[]');
-    
-    // Check if already exists
-    const exists = history.some(item => item.id === research.id);
-    if (exists) {
-      console.log('⚠️ Research already in history, skipping');
-      return;
+    try {
+      console.log('📝 Adding to history:', research?.id);
+      
+      if (!research || !research.id) {
+        console.error('❌ Invalid research object:', research);
+        return;
+      }
+      
+      let history = JSON.parse(localStorage.getItem('research_history') || '[]');
+      console.log('📚 Current history items:', history.length);
+      
+      // Check if already exists
+      const exists = history.some(item => item.id === research.id);
+      if (exists) {
+        console.log('⚠️ Research already in history, skipping');
+        return;
+      }
+      
+      // Validate required fields
+      if (!research.token || !research.analysis) {
+        console.error('❌ Missing token or analysis data:', research);
+        return;
+      }
+      
+      history.unshift({
+        id: research.id,
+        ticker: research.token.ticker,
+        name: research.token.name,
+        logo: research.token.logo,
+        risk_score: research.analysis.risk_score,
+        risk_class: research.analysis.risk_class,
+        created_at: research.created_at
+      });
+      
+      // Păstrează doar ultimele 50
+      history = history.slice(0, 50);
+      localStorage.setItem('research_history', JSON.stringify(history));
+      console.log('✅ History updated. Total items:', history.length);
+    } catch (error) {
+      console.error('❌ Error in addToHistory:', error);
     }
-    
-    history.unshift({
-      id: research.id,
-      ticker: research.token.ticker,
-      name: research.token.name,
-      logo: research.token.logo,
-      risk_score: research.analysis.risk_score,
-      risk_class: research.analysis.risk_class,
-      created_at: research.created_at
-    });
-    // Păstrează doar ultimele 50
-    history = history.slice(0, 50);
-    localStorage.setItem('research_history', JSON.stringify(history));
-    console.log('✅ History updated. Total items:', history.length);
   },
   
   async getResearch(id) {
