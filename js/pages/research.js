@@ -16,29 +16,33 @@ const formatters = {
   },
   
   marketCap: (value) => {
-    if (!value || value === 0) return '$0';
-    if (value >= 1e12) {
-      return '$' + (value / 1e12).toFixed(2) + 'T';
-    } else if (value >= 1e9) {
-      return '$' + (value / 1e9).toFixed(2) + 'B';
-    } else if (value >= 1e6) {
-      return '$' + (value / 1e6).toFixed(2) + 'M';
-    } else if (value >= 1e3) {
-      return '$' + (value / 1e3).toFixed(2) + 'K';
+    if (value === null || value === undefined || isNaN(value)) return 'N/A';
+    const num = Number(value);
+    if (num === 0) return '$0';
+    if (num >= 1e12) {
+      return '$' + (num / 1e12).toFixed(2) + 'T';
+    } else if (num >= 1e9) {
+      return '$' + (num / 1e9).toFixed(2) + 'B';
+    } else if (num >= 1e6) {
+      return '$' + (num / 1e6).toFixed(2) + 'M';
+    } else if (num >= 1e3) {
+      return '$' + (num / 1e3).toFixed(2) + 'K';
     }
-    return '$' + value.toFixed(2);
+    return '$' + num.toFixed(2);
   },
   
   number: (value) => {
-    if (!value || value === 0 || value === null || value === undefined) return 'N/A';
-    if (value >= 1e9) {
-      return (value / 1e9).toFixed(2) + 'B';
-    } else if (value >= 1e6) {
-      return (value / 1e6).toFixed(2) + 'M';
-    } else if (value >= 1e3) {
-      return (value / 1e3).toFixed(2) + 'K';
+    if (value === null || value === undefined || isNaN(value)) return 'N/A';
+    const num = Number(value);
+    if (num === 0) return '0';
+    if (num >= 1e9) {
+      return (num / 1e9).toFixed(2) + 'B';
+    } else if (num >= 1e6) {
+      return (num / 1e6).toFixed(2) + 'M';
+    } else if (num >= 1e3) {
+      return (num / 1e3).toFixed(2) + 'K';
     }
-    return value.toLocaleString('en-US');
+    return num.toLocaleString('en-US');
   },
   
   percentage: (value) => {
