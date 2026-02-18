@@ -298,7 +298,12 @@ const RealAPI = {
       console.log('✅ Research saved to localStorage');
       
       // Adaugă la istoric
+      console.log('📝 About to add to history, research object:', research);
+      console.log('📝 Research has id:', research?.id);
+      console.log('📝 Research has token:', !!research?.token);
+      console.log('📝 Research has analysis:', !!research?.analysis);
       this.addToHistory(research);
+      console.log('✅ addToHistory called successfully');
       
       return {
         success: true,
