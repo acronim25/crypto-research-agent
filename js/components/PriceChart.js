@@ -53,6 +53,10 @@ class PriceChart {
       return;
     }
 
+    // Set container height for the chart
+    this.container.style.height = '250px';
+    this.container.style.width = '100%';
+
     const ctx = document.createElement('canvas');
     this.container.innerHTML = '';
     this.container.appendChild(ctx);
