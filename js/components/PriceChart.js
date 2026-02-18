@@ -53,13 +53,24 @@ class PriceChart {
       return;
     }
 
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+      console.error('❌ Chart.js not loaded!');
+      this.renderEmpty();
+      return;
+    }
+    console.log('✅ Chart.js is available');
+
     // Set container height for the chart
     this.container.style.height = '250px';
     this.container.style.width = '100%';
+    this.container.style.position = 'relative';
 
     const ctx = document.createElement('canvas');
     this.container.innerHTML = '';
     this.container.appendChild(ctx);
+    
+    console.log('🎨 Creating Chart.js instance...');
 
     // Extract price values and dates
     const priceValues = prices.map(p => {
@@ -142,6 +153,9 @@ class PriceChart {
         }
       }
     });
+    
+    console.log('✅ Chart.js instance created successfully');
+    console.log('📊 Chart instance:', this.chart);
   }
 
   // Generate mock price data for demo
