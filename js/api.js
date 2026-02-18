@@ -108,20 +108,9 @@ const RealAPI = {
         }
       }
       
-      // Fetch price history from CoinGecko
-      try {
-        console.log('📊 Fetching price history for', coin.id);
-        const marketChart = await CoinGeckoAPI.getMarketChart(coin.id, 30);
-        // Limit to ~30 data points (one per day) to avoid storage quota
-        if (marketChart.prices && marketChart.prices.length > 30) {
-          priceHistory = marketChart.prices.filter((_, i) => i % Math.ceil(marketChart.prices.length / 30) === 0).slice(0, 30);
-        } else {
-          priceHistory = marketChart.prices;
-        }
-        console.log('✅ Price history fetched:', priceHistory?.length, 'data points');
-      } catch (e) {
-        console.warn('Price history fetch error:', e);
-      }
+      // Fetch price history from CoinGecko - DISABLED due to CORS and quota issues
+      // Using mock data instead
+      console.log('📊 Using mock price data');
 
       // Build research object
       const research = this.buildResearchObject(researchId, coinData, aggregatedData, priceHistory);
@@ -182,7 +171,7 @@ const RealAPI = {
         price_change_7d: marketData.price_change_percentage_7d || 0,
         price_change_30d: marketData.price_change_percentage_30d || 0
       },
-      price_history: priceHistory,
+      // price_history omitted to avoid localStorage quota
       tokenomics: {
         total_supply: marketData.total_supply,
         circulating_supply: marketData.circulating_supply,
