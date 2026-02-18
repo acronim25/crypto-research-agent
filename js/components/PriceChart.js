@@ -76,6 +76,7 @@ class PriceChart {
     ctx.height = 250;
     ctx.style.width = '100%';
     ctx.style.height = '250px';
+    ctx.style.backgroundColor = 'rgba(10, 15, 28, 0.8)'; // Add visible background
     
     this.container.innerHTML = '';
     this.container.appendChild(ctx);
