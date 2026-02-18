@@ -2,6 +2,21 @@
 // PAGES/HISTORY.JS - History Page Logic
 // ============================================
 
+// Formatters
+const formatters = {
+  date: (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ro-RO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   // State
   let currentPage = 1;
