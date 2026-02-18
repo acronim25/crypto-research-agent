@@ -107,7 +107,9 @@ const RealAPI = {
       localStorage.setItem(researchId, JSON.stringify(research));
       
       // Add to history
-      this.addToHistory(research);
+      console.log('📝 About to add to history:', research?.id);
+      RealAPI.addToHistory(research);
+      console.log('✅ addToHistory called');
       
       return {
         success: true,
@@ -193,6 +195,7 @@ const RealAPI = {
   },
   
   addToHistory(research) {
+    alert('Adding to history: ' + research?.id);
     console.log('📝 addToHistory called');
     try {
       if (!research?.id) {
@@ -219,9 +222,11 @@ const RealAPI = {
       
       history = history.slice(0, 50);
       localStorage.setItem('research_history', JSON.stringify(history));
+      alert('History saved! Total: ' + history.length);
       console.log('✅ History saved:', history.length, 'items');
     } catch (error) {
       console.error('❌ addToHistory error:', error);
+      alert('Error: ' + error.message);
     }
   },
   
