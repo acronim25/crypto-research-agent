@@ -38,9 +38,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load data
   console.log('📚 Loading history...');
+  console.log('🔧 API object:', typeof API);
+  console.log('🔧 API.getHistory:', typeof API?.getHistory);
   try {
     const response = await API.getHistory();
     console.log('📊 History response:', response);
+    console.log('📊 Response data:', response?.data);
+    console.log('📊 Response data researches:', response?.data?.researches?.length);
     
     if (response.success) {
       allResearches = response.data.researches || [];

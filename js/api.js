@@ -240,17 +240,25 @@ const RealAPI = {
   },
 
   async getHistory(limit = 50, offset = 0) {
-    console.log('🔍 getHistory called');
+    console.log('🔍 getHistory called with limit:', limit, 'offset:', offset);
     try {
       const raw = localStorage.getItem('research_history');
-      console.log('📦 Raw history:', raw ? raw.substring(0, 100) : 'empty');
+      console.log('📦 Raw history length:', raw ? raw.length : 0);
+      console.log('📦 Raw history first 200 chars:', raw ? raw.substring(0, 200) : 'empty');
+      
       const history = JSON.parse(raw || '[]');
       console.log('📚 Parsed history count:', history.length);
-      console.log('📚 History IDs:', history.map(h => h.id));
+      console.log('📚 History item 0:', history[0]);
+      console.log('📚 History item 1:', history[1]);  
+      console.log('📚 History item 2:', history[2]);
+      
+      const result = history.slice(offset, offset + limit);
+      console.log('📤 Returning:', result.length, 'items');
+      
       return {
         success: true,
         data: {
-          researches: history.slice(offset, offset + limit),
+          researches: result,
           pagination: { total: history.length, limit, offset }
         }
       };
