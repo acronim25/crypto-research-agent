@@ -73,7 +73,7 @@ class PriceChart {
         labels: labels,
         datasets: [{
           label: 'Preț (USD)',
-          data: pricesValues,
+          data: priceValues,
           borderColor: '#00f5d4',
           backgroundColor: 'rgba(0, 245, 212, 0.1)',
           borderWidth: 2,
