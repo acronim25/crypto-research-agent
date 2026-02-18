@@ -118,6 +118,14 @@ function renderResearch(data) {
     logoEl.style.display = 'block';
   }
 
+  // Price Chart
+  if (typeof PriceChart !== 'undefined') {
+    const priceChart = new PriceChart('priceChart', {
+      prices: data.price_history || PriceChart.generateMockData(data.price_data?.current_price || 1)
+    });
+    priceChart.render();
+  }
+
   // Risk Badge
   const riskBadge = new RiskBadge(data.analysis.risk_score, 'large');
   riskBadge.mount(document.getElementById('riskBadgeContainer'));
