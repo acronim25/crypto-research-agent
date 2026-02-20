@@ -132,6 +132,23 @@
       margin-bottom: var(--space-5);
       overflow: hidden;
       position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    .data-section:nth-child(1) { animation-delay: 0.1s; }
+    .data-section:nth-child(2) { animation-delay: 0.15s; }
+    .data-section:nth-child(3) { animation-delay: 0.2s; }
+    .data-section:nth-child(4) { animation-delay: 0.25s; }
+    .data-section:nth-child(5) { animation-delay: 0.3s; }
+    .data-section:nth-child(6) { animation-delay: 0.35s; }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .data-section::before {
@@ -548,6 +565,8 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
+          <div id="exportContainer"></div>
+          
           <button id="shareBtn" class="btn btn--secondary">
             <i class="fab fa-discord"></i> Share pe Discord
           </button>
@@ -585,13 +604,25 @@
 
   <!-- Scripts -->
   <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
   <script src="js/aggregator.js"></script>
   <script src="js/api.js"></script>
-  <!-- <script src="js/api-mock.js"></script> -->
+  <script src="js/theme-toggle.js"></script>
+  <script src="js/export-report.js"></script>
   <script src="js/components/RiskBadge.js"></script>
   <script src="js/components/PriceChart.js"></script>
   <script src="js/components/DataGrid.js"></script>
   <script src="js/components/RedFlagItem.js"></script>
   <script src="js/pages/research.js"></script>
+  <script>
+    // Initialize export button after page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        if (typeof ExportReport !== 'undefined') {
+          ExportReport.createExportButton('exportContainer', 'researchReport');
+        }
+      }, 1000);
+    });
+  </script>
 </body>
 </html>

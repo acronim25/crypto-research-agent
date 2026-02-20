@@ -33,6 +33,7 @@
     body {
       background: linear-gradient(135deg, #0a0f1c 0%, #0f172a 50%, #1a1033 100%);
       position: relative;
+      min-height: 100vh;
     }
     
     body::before {
@@ -68,6 +69,12 @@
       box-shadow: 0 0 40px rgba(0, 245, 212, 0.1), inset 0 0 40px rgba(0, 245, 212, 0.05);
       position: relative;
       overflow: hidden;
+      animation: fadeInUp 0.8s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .hero::before {
@@ -97,11 +104,19 @@
       text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 40px rgba(0, 245, 212, 0.5);
       font-family: 'JetBrains Mono', monospace;
       letter-spacing: -1px;
+      animation: glitch 0.5s ease 1s;
     }
     
     .hero__title span {
       color: var(--neon-green);
       text-shadow: 0 0 10px var(--neon-green), 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+    
+    @keyframes glitch {
+      0%, 100% { text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan); }
+      25% { text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--neon-green); }
+      50% { text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-green); }
+      75% { text-shadow: -1px 0 var(--neon-green), 1px 0 var(--neon-pink); }
     }
     
     .hero__subtitle {
@@ -110,6 +125,7 @@
       max-width: 600px;
       margin: 0 auto var(--space-6);
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      animation: fadeInUp 0.8s ease 0.2s both;
     }
     
     /* Search Form - Terminal Style */
@@ -123,6 +139,7 @@
       border: 1px solid rgba(0, 245, 212, 0.2);
       box-shadow: 0 0 30px rgba(0, 245, 212, 0.1), inset 0 0 20px rgba(0, 245, 212, 0.05);
       position: relative;
+      animation: fadeInUp 0.8s ease 0.3s both;
     }
     
     .search-section::before {
@@ -206,6 +223,7 @@
       letter-spacing: 1px;
       box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
       transition: all 0.3s ease;
+      cursor: pointer;
     }
     
     .search-form__button:hover {
@@ -214,9 +232,79 @@
       transform: translateY(-2px);
     }
     
+    .search-form__button:active {
+      transform: translateY(0);
+    }
+    
+    /* Category Filter */
+    .category-filter {
+      max-width: 700px;
+      margin: var(--space-4) auto;
+      padding: var(--space-4);
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+    
+    .category-filter__title {
+      font-size: var(--text-sm);
+      color: rgba(148, 163, 184, 0.8);
+      margin-bottom: var(--space-3);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .category-filter__list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    
+    .category-filter__btn {
+      padding: 8px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(0, 245, 212, 0.2);
+      border-radius: 20px;
+      color: rgba(148, 163, 184, 0.9);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .category-filter__btn:hover,
+    .category-filter__btn.active {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: rgba(0, 245, 212, 0.1);
+      box-shadow: 0 0 15px rgba(0, 245, 212, 0.2);
+    }
+    
+    .category-filter__btn i {
+      font-size: 0.75rem;
+    }
+    
+    /* Widgets Grid */
+    .widgets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-5);
+      margin: var(--space-8) 0;
+      animation: fadeInUp 0.8s ease 0.5s both;
+    }
+    
+    @media (max-width: 768px) {
+      .widgets-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
     /* Features Section */
     .features {
       padding: var(--space-8) 0;
+      animation: fadeInUp 0.8s ease 0.6s both;
     }
     
     .features__title {
@@ -243,7 +331,15 @@
       transition: all var(--duration-fast) var(--ease-default);
       position: relative;
       overflow: hidden;
+      animation: fadeInUp 0.6s ease both;
     }
+    
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.15s; }
+    .feature-card:nth-child(3) { animation-delay: 0.2s; }
+    .feature-card:nth-child(4) { animation-delay: 0.25s; }
+    .feature-card:nth-child(5) { animation-delay: 0.3s; }
+    .feature-card:nth-child(6) { animation-delay: 0.35s; }
     
     .feature-card::before {
       content: '';
@@ -271,6 +367,11 @@
       color: var(--neon-cyan);
       margin-bottom: var(--space-3);
       text-shadow: 0 0 15px rgba(0, 245, 212, 0.5);
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-card__icon {
+      transform: scale(1.1);
     }
     
     .feature-card__title {
@@ -297,6 +398,12 @@
     
     .loading--active {
       display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     
     .loading__spinner {
@@ -340,10 +447,17 @@
       color: #ff4444;
       font-family: 'JetBrains Mono', monospace;
       box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+      animation: shake 0.5s ease;
     }
     
     .error-message--active {
       display: block;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
     }
     
     /* Header Cyberpunk */
@@ -352,12 +466,20 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(0, 245, 212, 0.2);
       box-shadow: 0 2px 20px rgba(0, 245, 212, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
     .header__logo {
       color: var(--neon-cyan) !important;
       font-family: 'JetBrains Mono', monospace;
       text-shadow: 0 0 10px rgba(0, 245, 212, 0.5);
+      transition: all 0.3s ease;
+    }
+    
+    .header__logo:hover {
+      text-shadow: 0 0 20px rgba(0, 245, 212, 0.8);
     }
     
     .header__logo-icon {
@@ -424,6 +546,7 @@
       background: var(--neon-cyan);
       box-shadow: 0 0 10px var(--neon-cyan);
     }
+    
     /* Scanline Effect */
     body::after {
       content: '';
@@ -439,33 +562,6 @@
       background-size: 100% 4px;
       pointer-events: none;
       z-index: 9999;
-      animation: scanline 8s linear infinite;
-    }
-    
-    @keyframes scanline {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(4px); }
-    }
-    
-    /* Glitch Effect for Title */
-    .hero__title:hover {
-      animation: glitch 0.3s ease;
-    }
-    
-    @keyframes glitch {
-      0%, 100% { text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan); }
-      25% { text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--neon-green); }
-      50% { text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-green); }
-      75% { text-shadow: -1px 0 var(--neon-green), 1px 0 var(--neon-pink); }
-    }
-    /* Blinking Cursor for Input */
-    .search-form__input:focus::after {
-      content: '█';
-      animation: blink 1s step-end infinite;
-    }
-    
-    @keyframes blink {
-      50% { opacity: 0; }
     }
     
     /* Corner Decorations */
@@ -497,6 +593,67 @@
       border-bottom: 2px solid var(--neon-cyan);
       opacity: 0.3;
     }
+    
+    /* Trending tokens marquee */
+    .trending-bar {
+      background: rgba(15, 23, 42, 0.8);
+      border-top: 1px solid rgba(0, 245, 212, 0.1);
+      border-bottom: 1px solid rgba(0, 245, 212, 0.1);
+      padding: 12px 0;
+      overflow: hidden;
+      margin-bottom: var(--space-6);
+    }
+    
+    .trending-bar__content {
+      display: flex;
+      animation: marquee 30s linear infinite;
+      white-space: nowrap;
+    }
+    
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    
+    .trending-bar__item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    
+    .trending-bar__symbol {
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+    
+    .trending-bar__price {
+      color: #fff;
+    }
+    
+    .trending-bar__change {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+    }
+    
+    .trending-bar__change--up {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+    }
+    
+    .trending-bar__change--down {
+      background: rgba(255, 68, 68, 0.2);
+      color: #ff4444;
+    }
+    
+    .trending-bar__label {
+      color: rgba(148, 163, 184, 0.8);
+      margin-right: 16px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -516,6 +673,13 @@
       </div>
     </div>
   </header>
+
+  <!-- Trending Bar -->
+  <div class="trending-bar">
+    <div class="trending-bar__content" id="trendingBar">
+      <!-- Populated by JS -->
+    </div>
+  </div>
 
   <!-- Main Content -->
   <main class="main">
@@ -548,7 +712,7 @@
           <p class="search-form__examples">
             <strong>Exemple:</strong> PEPE, BTC, 0x6982508145454Ce325dDbE47a25d4ec3d2311933, Ethereum
           </p>
-          <button type="submit" class="btn btn--primary btn--lg search-form__button" id="submitBtn">
+          <button type="submit" class="search-form__button" id="submitBtn">
             <i class="fas fa-rocket"></i>
             Research Acum
           </button>
@@ -567,6 +731,21 @@
           <span id="errorText">Token-ul nu a fost găsit.</span>
         </div>
       </section>
+
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <div class="category-filter__title">Filtrează după categorie</div>
+        <div class="category-filter__list" id="categoryFilter">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Widgets Grid -->
+      <div class="widgets-grid">
+        <div id="newsWidget"></div>
+        <div id="portfolioWidget"></div>
+        <div id="alertsWidget"></div>
+      </div>
 
       <!-- Features Section -->
       <section class="features">
@@ -637,18 +816,98 @@
 
   <!-- Scripts -->
   <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
   <script src="js/aggregator.js"></script>
   <script src="js/api.js"></script>
-  <script>
-    console.log('✅ Scripts loaded:', {
-      config: typeof CONFIG !== 'undefined',
-      aggregator: typeof Aggregator !== 'undefined',
-      api: typeof API !== 'undefined'
-    });
-  </script>
+  <script src="js/autocomplete.js"></script>
+  <script src="js/theme-toggle.js"></script>
+  <script src="js/news-widget.js"></script>
+  <script src="js/portfolio-widget.js"></script>
+  <script src="js/price-alerts.js"></script>
   <script src="js/pages/index.js"></script>
   <script>
-    console.log('✅ Page script loaded');
+    // Initialize new features
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize autocomplete
+      const tokenInput = document.getElementById('tokenInput');
+      if (tokenInput && typeof Autocomplete !== 'undefined') {
+        new Autocomplete(tokenInput, {
+          onSelect: (item) => {
+            console.log('Selected:', item);
+          }
+        });
+      }
+
+      // Initialize category filter
+      initCategoryFilter();
+
+      // Initialize trending bar
+      initTrendingBar();
+
+      // Initialize widgets
+      if (typeof NewsWidget !== 'undefined') {
+        new NewsWidget('newsWidget');
+      }
+      if (typeof PortfolioWidget !== 'undefined') {
+        new PortfolioWidget('portfolioWidget');
+      }
+      if (typeof PriceAlerts !== 'undefined') {
+        new PriceAlerts('alertsWidget');
+      }
+    });
+
+    function initCategoryFilter() {
+      const container = document.getElementById('categoryFilter');
+      if (!container || typeof MOCK_DATA === 'undefined') return;
+
+      const categories = MOCK_DATA.categories;
+      const allBtn = document.createElement('button');
+      allBtn.className = 'category-filter__btn active';
+      allBtn.innerHTML = '<i class="fas fa-th"></i> Toate';
+      allBtn.addEventListener('click', () => {
+        document.querySelectorAll('.category-filter__btn').forEach(b => b.classList.remove('active'));
+        allBtn.classList.add('active');
+      });
+      container.appendChild(allBtn);
+
+      Object.entries(categories).forEach(([name, data]) => {
+        const btn = document.createElement('button');
+        btn.className = 'category-filter__btn';
+        btn.innerHTML = `<i class="fas ${data.icon}"></i> ${name}`;
+        btn.style.borderColor = `${data.color}40`;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.category-filter__btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          // Filter tokens by category
+          console.log('Filter by:', name);
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function initTrendingBar() {
+      const container = document.getElementById('trendingBar');
+      if (!container || typeof MOCK_DATA === 'undefined') return;
+
+      const trending = MOCK_DATA.tokens
+        .sort((a, b) => Math.abs(b.change24h) - Math.abs(a.change24h))
+        .slice(0, 10);
+
+      const items = [...trending, ...trending]; // Duplicate for seamless loop
+
+      container.innerHTML = `
+        <span class="trending-bar__label"><i class="fas fa-fire"></i> TRENDING:</span>
+        ${items.map(token => `
+          <span class="trending-bar__item">
+            <span class="trending-bar__symbol">${token.symbol}</span>
+            <span class="trending-bar__price">$${token.price.toFixed(4)}</span>
+            <span class="trending-bar__change ${token.change24h >= 0 ? 'trending-bar__change--up' : 'trending-bar__change--down'}">
+              ${token.change24h >= 0 ? '+' : ''}${token.change24h.toFixed(2)}%
+            </span>
+          </span>
+        `).join('')}
+      `;
+    }
   </script>
 </body>
 </html>
