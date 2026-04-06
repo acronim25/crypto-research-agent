@@ -5,6 +5,7 @@ module.exports = {
   collectCoverageFrom: [
     'lib/**/*.js',
     'api/**/*.js',
+    'js/aggregator.js',
     '!**/node_modules/**'
   ],
   coverageThreshold: {
