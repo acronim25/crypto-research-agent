@@ -5,9 +5,18 @@
   "main": "index.html",
   "scripts": {
     "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
   },
-  "keywords": ["crypto", "research", "token", "analysis", "risk-score"],
+  "keywords": [
+    "crypto",
+    "research",
+    "token",
+    "analysis",
+    "risk-score"
+  ],
   "author": "Alex",
   "license": "MIT",
   "dependencies": {
@@ -18,6 +27,7 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "jest": "^30.3.0",
     "vercel": "latest"
   }
 }
